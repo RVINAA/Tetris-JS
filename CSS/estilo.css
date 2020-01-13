@@ -137,8 +137,7 @@ body, html {
 
 .tablero {
     outline: 3px groove var(--colorBiseles);
-    border-bottom: 1px dotted var(--colorLetras);
-    border-right: 1px dotted var(--colorLetras);
+    border: 1px dotted var(--colorLetras);
     margin: 3px 9px 10px 13px;
     height: 182px;
     width: 92px;
