@@ -45,13 +45,13 @@ const TETRIS = (function () {
     let num = -10;
     // Timer para el Juego.
     function timerTask() {
-        canvasPantalla.mostrar(); // Pintamos el canvas en cada task.
+        canvasPantalla.mostrar(); // Pintamos el canvas.
         let cuadrado = new crearBloque(10, "red", 0, num+=10);
 
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//https://www.w3schools.com/graphics/game_components.asp
+//https://www.w3schools.com/graphics/game_controllers.asp
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
