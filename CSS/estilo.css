@@ -1,0 +1,146 @@
+:root {
+    --colorBiseles: #757575;
+    --colorLetras: white;
+}
+
+* {
+    color: var(--colorLetras);
+    background-color: black;
+    box-sizing: border-box;
+    font-family: Cambria;
+    text-align: center;
+    padding: 0px;
+    margin: 0px;
+}
+
+body, html {
+    background-color: var(--colorLetras);
+}
+
+.header, #tetris {
+    user-select: none;
+    cursor: pointer;
+}
+
+.header {
+    outline: 5px groove var(--colorBiseles);
+    border: 1px solid black;
+    width: 226px;
+    margin: 10px;
+}
+
+.header > p {
+    display: inline-block;
+}
+
+.header > a {
+    text-decoration: none;
+    margin-right: 10px;
+    float: right;
+}
+
+.header > a:hover {
+    color: #e1e1e1;
+}
+
+#tetris {
+    background-image: url('../IMGs/Fondo.png');
+    outline: 5px groove var(--colorBiseles);
+    border: 1px solid black;
+    height: 243px;
+    width: 226px;
+    margin: 10px;
+}
+
+.puntuacion {
+    border: 3px groove var(--colorBiseles);
+    margin: 9px 0px 0px 9px;
+    height: 26px;
+    width: 98px;
+    float: left;
+}
+
+.lineas {
+    border: 3px groove var(--colorBiseles);
+    margin: 9px 8px 10px 10px;
+    height: 26px;
+    width: 98px;
+    float: left;
+}
+
+.estadisticas {
+    border: 3px groove var(--colorBiseles);
+    margin: 0px 0px 10px 9px;
+    height: 188px;
+    width: 98px;
+    float: left;
+}
+
+.estadisticas > p {
+    text-decoration: underline;
+}
+
+.estadisticas > ul {
+    list-style-type: none;
+}
+
+.estadisticas > ul > li {
+    margin: 3px;
+}
+
+.estadisticas > ul > li:nth-of-type(1) {
+    margin-top: 6px;
+}
+
+.estadisticas > ul > li > p {
+    color: red;
+}
+
+.estadisticas > ul > li > img {
+    float: left;
+}
+
+.estadisticas > ul > li:nth-of-type(1) > img {
+    background: url('../IMGs/T.png') 0px 0px;
+    margin-left: 10px;
+}
+
+.estadisticas > ul > li:nth-of-type(2) > img {
+    background: url('../IMGs/L2.png') 0px 0px;
+    margin-left: 10px;
+}
+
+.estadisticas > ul > li:nth-of-type(3) > img {
+    background: url('../IMGs/N1.png') 0px 0px;
+    margin-left: 10px;
+}
+
+.estadisticas > ul > li:nth-of-type(4) > img {
+    margin-left: 19px;
+}
+
+.estadisticas > ul > li:nth-of-type(5) > img {
+    background: url('../IMGs/N2.png') 0px 0px;
+    margin-left: 10px;
+}
+
+.estadisticas > ul > li:nth-of-type(6) > img {
+    background: url('../IMGs/L1.png') 0px 0px;
+    margin-left: 10px;
+}
+
+.estadisticas > ul > li:nth-of-type(7) > img {
+    background: url('../IMGs/I.png') 0px 0px;
+    margin-left: 1px;
+    margin-top: 5px;
+}
+
+.tablero {
+    outline: 3px groove var(--colorBiseles);
+    border-bottom: 1px dotted var(--colorLetras);
+    border-right: 1px dotted var(--colorLetras);
+    margin: 3px 9px 10px 13px;
+    height: 182px;
+    width: 92px;
+    float: left;
+}
