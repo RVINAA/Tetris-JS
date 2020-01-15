@@ -1,10 +1,10 @@
 const TETRIS = (() => {
     const MAX_MARGENES_TABLERO = [0, 170, 80];
-    const BLOQUE_GENERADOR_DE_PIEZA = 2;
+    const BLOQUE_GENERADOR_DE_PIEZA = 3;
     const DIMENSION_BLOQUE = 10;
     const HEIGHT_CANVAS = 180;
     const WIDTH_CANVAS = 90;
-    const VELOCIDAD = 400;
+    const VELOCIDAD = 100;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //   Creamos un canvas, posteriormente creamos un tablero donde guardaremos cada celda, su posición y un color a pintar.  //
@@ -20,8 +20,8 @@ const TETRIS = (() => {
         }
     };
 
-    let contadorX = -10; let contadorY = 0;
-    let tableroArray = new Array( (HEIGHT_CANVAS / DIMENSION_BLOQUE) * (WIDTH_CANVAS / DIMENSION_BLOQUE) ).fill('.');
+    let contadorX = -10; let contadorY = -20;
+    let tableroArray = new Array( (HEIGHT_CANVAS + 20 / DIMENSION_BLOQUE) * (WIDTH_CANVAS / DIMENSION_BLOQUE) ).fill('.');
     tableroArray = tableroArray.map( (casilla) => {
         if (contadorX == 80) { contadorY += DIMENSION_BLOQUE; contadorX = -(DIMENSION_BLOQUE); }
         return new casillaTablero(contadorX += DIMENSION_BLOQUE, contadorY);
@@ -53,16 +53,13 @@ const TETRIS = (() => {
         return new figuraCuadrado();
     }
 
-    // Bug: 1.) Hay un retroceso cuando se mueve hacia la izquierda. 2.) A veces la colisión lateral izq hace algo raro por el bug 1.).
     function figuraCuadrado() {
-        let bloques = [BLOQUE_GENERADOR_DE_PIEZA, BLOQUE_GENERADOR_DE_PIEZA + 1, BLOQUE_GENERADOR_DE_PIEZA + 9, BLOQUE_GENERADOR_DE_PIEZA + 10];  
-        this.colisionDetectada = false; // 00 01   0  1
-        const color = 'yellow';         // 09 10   2  3
+        let bloques = [BLOQUE_GENERADOR_DE_PIEZA, BLOQUE_GENERADOR_DE_PIEZA + 1, BLOQUE_GENERADOR_DE_PIEZA + 9, BLOQUE_GENERADOR_DE_PIEZA + 10];
+        this.colisionDetectada = false;
+        const color = 'yellow';
 
-        window.addEventListener('keydown', desplazarLateralmente, false); // Primera vez, cuando se crea la figura.
-        bloques.forEach( bloque => { // Primera vez, cuando se crea la figura.
-            tableroArray[bloque].color = color;
-        });
+        bloques.forEach( bloque => { tableroArray[bloque].color = color; });
+        window.addEventListener('keydown', desplazarLateralmente, false);
 
         let timerFiguraDescenso = setInterval( () => {
             // Si en los dos bloques inferiores, al ser un cuadrado, hay colisión O llegamos a la última fila (con mirar aquí un solo bloque vale), detenemos el timer y eliminamos la figura.
@@ -72,8 +69,7 @@ const TETRIS = (() => {
                 this.colisionDetectada = true;
             } else {
                 bloques = bloques.map( (bloque, index) => {
-                    if (index == 0 || index == 1) tableroArray[bloque].color = null;
-                    tableroArray[bloque + 9].color = color;
+                    (index == 0 || index == 1) ? tableroArray[bloque].color = null : tableroArray[bloque + 9].color = color;
                     return bloque + 9;
                 });
             }
@@ -82,19 +78,17 @@ const TETRIS = (() => {
         function desplazarLateralmente(evt) {
             switch (evt.code) {
                 case 'ArrowLeft':
-                    if ( (tableroArray[bloques[1]].x > MAX_MARGENES_TABLERO[0] && tableroArray[bloques[3]].x > MAX_MARGENES_TABLERO[0]) && tableroArray[bloques[1] - 1].color == null && tableroArray[bloques[3] - 1].color == null ) {
-                        bloques = bloques.map( bloque => {
-                            tableroArray[bloque].color = null;
-                            tableroArray[bloque - 1].color = color;
+                    if ( (tableroArray[bloques[0]].x > MAX_MARGENES_TABLERO[0] && tableroArray[bloques[2]].x > MAX_MARGENES_TABLERO[0]) && tableroArray[bloques[0] - 1].color == null && tableroArray[bloques[2] - 1].color == null ) {
+                        bloques = bloques.map( (bloque, index) => {
+                            (index == 1 || index == 3) ? tableroArray[bloque].color = null : tableroArray[bloque - 1].color = color;
                             return bloque - 1;
                         });
                     }
                     break;
                 case 'ArrowRight':
-                    if ( (tableroArray[bloques[0]].x < MAX_MARGENES_TABLERO[1] && tableroArray[bloques[2]].x < MAX_MARGENES_TABLERO[2])  && tableroArray[bloques[0] + 1].color == null && tableroArray[bloques[2] + 1].color == null ) {
-                        bloques = bloques.map( bloque => {
-                            tableroArray[bloque].color = null;
-                            tableroArray[bloque + 1].color = color;
+                    if ( (tableroArray[bloques[1]].x < MAX_MARGENES_TABLERO[1] && tableroArray[bloques[3]].x < MAX_MARGENES_TABLERO[2])  && tableroArray[bloques[1] + 1].color == null && tableroArray[bloques[3] + 1].color == null ) {
+                        bloques = bloques.map( (bloque, index) => {
+                            (index == 0 || index == 2) ? tableroArray[bloque].color = null : tableroArray[bloque + 1].color = color;
                             return bloque + 1;
                         });
                     }
@@ -118,7 +112,7 @@ const TETRIS = (() => {
     }
 
     function colisionSuperior() {
-        return (figuraActualAleatoria.colisionDetectada  && tableroArray[BLOQUE_GENERADOR_DE_PIEZA].color != null) ? true : false;
+        return (figuraActualAleatoria.colisionDetectada && tableroArray[BLOQUE_GENERADOR_DE_PIEZA].color != null) ? true : false;
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
