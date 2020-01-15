@@ -35,7 +35,7 @@ const TETRIS = (() => {
 
     function pintarTablero() {
         tableroArray.forEach( casilla => {
-            if (casilla.color != null) { pintarBloque(casilla.color, casilla.x, casilla.y); }
+            if (casilla.color != null) pintarBloque(casilla.color, casilla.x, casilla.y);
         });
     }
 
@@ -52,26 +52,27 @@ const TETRIS = (() => {
     function generarfigura() { // Hasta que hagamos más figuras.
         return new figuraCuadrado();
     }
+
     // Bug: 1.) Hay un retroceso cuando se mueve hacia la izquierda. 2.) A veces la colisión lateral izq hace algo raro por el bug 1.).
     function figuraCuadrado() {
-        let bloques = [BLOQUE_GENERADOR_DE_PIEZA + 10, BLOQUE_GENERADOR_DE_PIEZA + 9, BLOQUE_GENERADOR_DE_PIEZA + 1, BLOQUE_GENERADOR_DE_PIEZA];  
-        this.colisionDetectada = false; // 00 01   3  2
-        const color = 'yellow';         // 09 10   1  0
+        let bloques = [BLOQUE_GENERADOR_DE_PIEZA, BLOQUE_GENERADOR_DE_PIEZA + 1, BLOQUE_GENERADOR_DE_PIEZA + 9, BLOQUE_GENERADOR_DE_PIEZA + 10];  
+        this.colisionDetectada = false; // 00 01   0  1
+        const color = 'yellow';         // 09 10   2  3
 
-        window.addEventListener('keydown', desplazarLateralmente, false);
-        bloques.forEach( bloque => {
+        window.addEventListener('keydown', desplazarLateralmente, false); // Primera vez, cuando se crea la figura.
+        bloques.forEach( bloque => { // Primera vez, cuando se crea la figura.
             tableroArray[bloque].color = color;
         });
 
         let timerFiguraDescenso = setInterval( () => {
             // Si en los dos bloques inferiores, al ser un cuadrado, hay colisión O llegamos a la última fila (con mirar aquí un solo bloque vale), detenemos el timer y eliminamos la figura.
-            if ( tableroArray[bloques[0]].y == MAX_MARGENES_TABLERO[1] || (tableroArray[bloques[0] + 9].color != null || tableroArray[bloques[1] + 9].color != null) ) {
+            if ( tableroArray[bloques[3]].y == MAX_MARGENES_TABLERO[1] || (tableroArray[bloques[2] + 9].color != null || tableroArray[bloques[3] + 9].color != null) ) {
                 window.removeEventListener('keydown', desplazarLateralmente, false);
                 clearInterval(timerFiguraDescenso);
                 this.colisionDetectada = true;
             } else {
-                bloques = bloques.map( bloque => {
-                    tableroArray[bloque].color = null;
+                bloques = bloques.map( (bloque, index) => {
+                    if (index == 0 || index == 1) tableroArray[bloque].color = null;
                     tableroArray[bloque + 9].color = color;
                     return bloque + 9;
                 });
