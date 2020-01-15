@@ -1,8 +1,9 @@
 const TETRIS = (() => {
-    const MAX_MARGENES_TABLERO = [0, 170, 90];
+    const MAX_MARGENES_TABLERO = [0, 190, 90];
     const BLOQUE_GENERADOR_DE_PIEZA = 4;
+    const PIEZAS_EN_UNA_FILA = 10;
     const DIMENSION_BLOQUE = 10;
-    const HEIGHT_CANVAS = 180;
+    const HEIGHT_CANVAS = 200;
     const WIDTH_CANVAS = 100;
     const VELOCIDAD = 100;
 
@@ -63,14 +64,14 @@ const TETRIS = (() => {
 
         let timerFiguraDescenso = setInterval( () => {
             // Si en los dos bloques inferiores, al ser un cuadrado, hay colisión O llegamos a la última fila (con mirar aquí un solo bloque vale), detenemos el timer y eliminamos la figura.
-            if ( tableroArray[bloques[3]].y == MAX_MARGENES_TABLERO[1] || (tableroArray[bloques[2] + 10].color != null || tableroArray[bloques[3] + 10].color != null) ) {
+            if ( tableroArray[bloques[3]].y == MAX_MARGENES_TABLERO[1] || (tableroArray[bloques[2] + PIEZAS_EN_UNA_FILA].color != null || tableroArray[bloques[3] + PIEZAS_EN_UNA_FILA].color != null) ) {
                 window.removeEventListener('keydown', desplazarLateralmente, false);
                 clearInterval(timerFiguraDescenso);
                 this.colisionDetectada = true;
             } else {
                 bloques = bloques.map( (bloque, index) => {
-                    (index == 0 || index == 1) ? tableroArray[bloque].color = null : tableroArray[bloque + 10].color = color;
-                    return bloque + 10;
+                    (index == 0 || index == 1) ? tableroArray[bloque].color = null : tableroArray[bloque + PIEZAS_EN_UNA_FILA].color = color;
+                    return bloque + PIEZAS_EN_UNA_FILA;
                 });
             }
          }, VELOCIDAD );
@@ -105,7 +106,11 @@ const TETRIS = (() => {
         canvasPantalla.mostrar(); // Update.
 
         if (!colisionSuperior()) {
-            if (figuraActualAleatoria.colisionDetectada) { console.log('colisionada');figuraActualAleatoria = generarfigura() };
+            if (figuraActualAleatoria.colisionDetectada) { 
+                console.log('colisionada');
+                //filaRellena();
+                figuraActualAleatoria = generarfigura();
+            }
         } else { clearInterval(juego); }
 
         pintarTablero();
@@ -113,6 +118,20 @@ const TETRIS = (() => {
 
     function colisionSuperior() {
         return (figuraActualAleatoria.colisionDetectada && tableroArray[BLOQUE_GENERADOR_DE_PIEZA].color != null) ? true : false;
+    }
+
+    function comprobarFilasRellenas () {
+        let lineasRellenadas = 0;
+        let coincidencias = 0;
+        tableroArray.forEach( (casilla, index) => {
+            if (index != 0 && index % PIEZAS_EN_UNA_FILA == 0) coincidencias = 0;
+            if (casilla.color != null) ++coincidencias;
+            if(coincidencias == 9) ++lineasRellenadas;
+        });
+        // Aqui por ejemplo tenemos 0.. 2 lineas rellenadas.
+        if (lineasRellenadas != 0) {
+            
+        }
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
