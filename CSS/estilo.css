@@ -79,7 +79,7 @@ body, html {
 }
 
 .estadisticas > ul > li:nth-of-type(1) {
-    margin-top: 6px;
+    margin-top: 8px;
 }
 
 .estadisticas > ul > li > p {

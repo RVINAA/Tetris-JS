@@ -1,6 +1,8 @@
 document.addEventListener("DOMContentLoaded", () => {
     const BLOQUES = ['block-T', 'block-L2', 'block-N1', 'block-C', 'block-N2', 'block-L1', 'block-I'];
 
+    document.title = 'Tetris JS';
+
     // Cabecera .header
     let puntero = document.createElement('div');
     puntero.className = 'header';

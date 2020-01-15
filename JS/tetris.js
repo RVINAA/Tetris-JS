@@ -1,5 +1,6 @@
 const TETRIS = (() => {
-    const MAX_MARGENES_TABLERO = [0, 170];
+    const MAX_MARGENES_TABLERO = [0, 170, 80];
+    const BLOQUE_GENERADOR_DE_PIEZA = 2;
     const DIMENSION_BLOQUE = 10;
     const HEIGHT_CANVAS = 180;
     const WIDTH_CANVAS = 90;
@@ -49,11 +50,11 @@ const TETRIS = (() => {
     function generarfigura() { // Hasta que hagamos más figuras.
         return new figuraCuadrado();
     }
-
+    // Bug: 1.) Hay un retroceso cuando se mueve hacia la izquierda. 2.) A veces la colisión lateral izq hace algo raro por el bug 1.).
     function figuraCuadrado() {
-        this.colisionDetectada = false;
-        let bloques = [10, 9, 1, 0];
-        const color = 'yellow';
+        let bloques = [BLOQUE_GENERADOR_DE_PIEZA + 10, BLOQUE_GENERADOR_DE_PIEZA + 9, BLOQUE_GENERADOR_DE_PIEZA + 1, BLOQUE_GENERADOR_DE_PIEZA];  
+        this.colisionDetectada = false; // 00 01   3  2
+        const color = 'yellow';         // 09 10   1  0
 
         window.addEventListener('keydown', desplazarLateralmente, false);
         bloques.forEach( bloque => {
@@ -62,10 +63,10 @@ const TETRIS = (() => {
 
         let timerFiguraDescenso = setInterval( () => {
             // Si en los dos bloques inferiores, al ser un cuadrado, hay colisión O llegamos a la última fila (con mirar aquí un solo bloque vale), detenemos el timer y eliminamos la figura.
-            if ( tableroArray[bloques[0]].y == MAX_MARGENES_TABLERO[1] || (tableroArray[bloques[0] + 9].color != null && tableroArray[bloques[1] + 9].color != null) ) {
+            if ( tableroArray[bloques[0]].y == MAX_MARGENES_TABLERO[1] || (tableroArray[bloques[0] + 9].color != null || tableroArray[bloques[1] + 9].color != null) ) {
                 window.removeEventListener('keydown', desplazarLateralmente, false);
                 clearInterval(timerFiguraDescenso);
-                colisionDetectada = true;
+                this.colisionDetectada = true;
             } else {
                 bloques = bloques.map( bloque => {
                     tableroArray[bloque].color = null;
@@ -73,33 +74,48 @@ const TETRIS = (() => {
                     return bloque + 9;
                 });
             }
-         }, VELOCIDAD );
+         }, VELOCIDAD ); // Añadir mañana: Si toca el tope de arriba pierdes.
 
-        function desplazarLateralmente() {
-            switch (evt.code) { // Revisar mañana, al desplazar hay que ELIMINAR anteriores.
+        function desplazarLateralmente(evt) {
+            switch (evt.code) {
                 case 'ArrowLeft':
-                    if (tableroArray[bloques[0]].x > MAX_MARGENES_TABLERO[0]) bloques = bloques.map( bloque => bloque - 1); 
+                    if ( (tableroArray[bloques[1]].x > MAX_MARGENES_TABLERO[0] && tableroArray[bloques[3]].x > MAX_MARGENES_TABLERO[0]) && tableroArray[bloques[1] - 1].color == null && tableroArray[bloques[3] - 1].color == null ) {
+                        bloques = bloques.map( bloque => {
+                            tableroArray[bloque].color = null;
+                            tableroArray[bloque - 1].color = color;
+                            return bloque - 1;
+                        });
+                    }
                     break;
                 case 'ArrowRight':
-                    if (tableroArray[bloques[1]].x > MAX_MARGENES_TABLERO[1]) bloques = bloques.map( bloque => bloque + 1);
+                    if ( (tableroArray[bloques[0]].x < MAX_MARGENES_TABLERO[1] && tableroArray[bloques[2]].x < MAX_MARGENES_TABLERO[2])  && tableroArray[bloques[0] + 1].color == null && tableroArray[bloques[2] + 1].color == null ) {
+                        bloques = bloques.map( bloque => {
+                            tableroArray[bloque].color = null;
+                            tableroArray[bloque + 1].color = color;
+                            return bloque + 1;
+                        });
+                    }
                     break;
             }
         }
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-    
-    let figuraActual = generarfigura();
+    let figuraActualAleatoria = generarfigura();
+    let juego = setInterval(timerTask, 10);
+
     function timerTask() {
         canvasPantalla.mostrar(); // Update.
+
+        if (!colisionSuperior()) {
+            if (figuraActualAleatoria.colisionDetectada) { console.log('colisionada');figuraActualAleatoria = generarfigura() };
+        } else { clearInterval(juego); }
+
         pintarTablero();
-        if (figuraActual.colision) figuraActual = generarfigura();
     }
 
-    setInterval(timerTask, 10);
-
-    function lanzarAplicacion() {
-        
+    function colisionSuperior() {
+        return (figuraActualAleatoria.colisionDetectada  && tableroArray[BLOQUE_GENERADOR_DE_PIEZA].color != null) ? true : false;
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -109,8 +125,6 @@ const TETRIS = (() => {
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-    return {lanzarAplicacion};
 
 })();
 
