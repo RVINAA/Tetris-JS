@@ -1,58 +1,12 @@
-<!DOCTYPE Html><!-- El movimiento debe de ser 9px. 181px x 91px -->
+<!DOCTYPE Html>
 <Html lang = "es">
     <head>
         <title>Tetris JS</title>
         <meta charset = "utf-8">
         <link rel = "stylesheet" type = "text/css" href = "CSS/estilo.css">
-        <script src = "JS/tetris.js"></script>
+        <script src = "JS/cargarEstructuraDOM.js"></script>
     </head>
     <body>
-        <div class="header">
-            <p>TETRIS @SIGMA</p>
-            <a>PLAY <img src = "IMGs/play.png"/></a>
-        </div>
-        <div id="tetris">
-            <div class="puntuacion">
-                <p>00000000</p>
-            </div>
-            <div class="lineas">
-                <p>LINES - 000</p>
-            </div>
-            <div class="estadisticas">
-                <p>STATISTICS<p>
-                <ul>
-                    <li>
-                        <img src = "IMGs/T-L-N.png"/>
-                        <p class = "block-T">000</p>
-                    </li>
-                    <li>
-                        <img src = "IMGs/T-L-N.png"/>
-                        <p class = "block-L2">000</p>
-                    </li>
-                    <li>
-                        <img src = "IMGs/T-L-N.png"/>
-                        <p class = "block-N1">000</p>
-                    </li>
-                    <li>
-                        <img src = "IMGs/C.png"/>
-                        <p class = "block-C">000</p>
-                    </li>
-                    <li>
-                        <img src = "IMGs/T-L-N.png"/>
-                        <p class = "block-N2">000</p>
-                    </li>
-                    <li>
-                        <img src = "IMGs/T-L-N.png"/>
-                        <p class = "block-L1">000</p>
-                    </li>
-                    <li>
-                        <img src = "IMGs/C-I.png"/>
-                        <p class = "block-L1">000</p>
-                    </li>
-                </ul>
-            </div>
-            <div class="tablero"></div>
-        </div>
-        <script>TETRIS.lanzar();</script>
+        <script src = "JS/tetris.js">TETRIS.lanzarAplicacion();</script>
     </body>
 </Html>
