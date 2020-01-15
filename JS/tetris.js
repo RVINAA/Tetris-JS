@@ -4,7 +4,7 @@ const TETRIS = (() => {
     const DIMENSION_BLOQUE = 10;
     const HEIGHT_CANVAS = 180;
     const WIDTH_CANVAS = 90;
-    const VELOCIDAD = 200;
+    const VELOCIDAD = 400;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //   Creamos un canvas, posteriormente creamos un tablero donde guardaremos cada celda, su posición y un color a pintar.  //
@@ -41,8 +41,10 @@ const TETRIS = (() => {
 
     function pintarBloque(color, x, y) {
         const bloque = canvasPantalla.context;
+        const imagen = new Image();
+        imagen.src = 'IMGs/' + color +'.png';
         bloque.fillStyle = color;
-        bloque.fillRect(x, y, DIMENSION_BLOQUE, DIMENSION_BLOQUE);  
+        bloque.drawImage(imagen, x, y, DIMENSION_BLOQUE, DIMENSION_BLOQUE);  
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +76,7 @@ const TETRIS = (() => {
                     return bloque + 9;
                 });
             }
-         }, VELOCIDAD ); // Añadir mañana: Si toca el tope de arriba pierdes.
+         }, VELOCIDAD );
 
         function desplazarLateralmente(evt) {
             switch (evt.code) {
@@ -119,10 +121,7 @@ const TETRIS = (() => {
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//https://www.w3schools.com/graphics/game_controllers.asp
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
+// https://www.w3schools.com/graphics/game_sound.asp
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
