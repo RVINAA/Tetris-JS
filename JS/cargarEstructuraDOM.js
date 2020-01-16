@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
     BLOQUES.forEach( bloque => {
         let liPuntero = document.createElement('li');
         liPuntero.appendChild(document.createElement('img'));
-        liPuntero.firstElementChild.src = 'IMGs/piezas' + bloque + '.png';
+        liPuntero.firstElementChild.src = 'IMGs/piezas/' + bloque + '.png';
         liPuntero.appendChild(document.createElement('p'));
         liPuntero.children[1].className = bloque;
         liPuntero.children[1].innerText = '000';

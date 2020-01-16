@@ -43,7 +43,7 @@ const TETRIS = (() => {
     function pintarBloque(color, x, y) {
         const bloque = canvasPantalla.context;
         const imagen = new Image();
-        imagen.src = 'IMGs/casillas' + color +'.png';
+        imagen.src = 'IMGs/casillas/' + color +'.png';
         bloque.fillStyle = color;
         bloque.drawImage(imagen, x, y, DIMENSION_BLOQUE, DIMENSION_BLOQUE);  
     }
