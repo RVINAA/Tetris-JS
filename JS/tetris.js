@@ -43,7 +43,7 @@ const TETRIS = (() => {
     function pintarBloque(color, x, y) {
         const bloque = canvasPantalla.context;
         const imagen = new Image();
-        imagen.src = 'IMGs/' + color +'.png';
+        imagen.src = 'IMGs/casillas' + color +'.png';
         bloque.fillStyle = color;
         bloque.drawImage(imagen, x, y, DIMENSION_BLOQUE, DIMENSION_BLOQUE);  
     }
@@ -57,7 +57,7 @@ const TETRIS = (() => {
     function figuraCuadrado() {
         let bloques = [BLOQUE_GENERADOR_DE_PIEZA, BLOQUE_GENERADOR_DE_PIEZA + 1, BLOQUE_GENERADOR_DE_PIEZA + 10, BLOQUE_GENERADOR_DE_PIEZA + 11];
         this.colisionDetectada = false;
-        const color = 'yellow';
+        const color = 'azulBlanco';
 
         bloques.forEach( bloque => { tableroArray[bloque].color = color; });
         window.addEventListener('keydown', desplazarLateralmente, false);
@@ -99,6 +99,7 @@ const TETRIS = (() => {
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     let figuraActualAleatoria = generarfigura();
     let juego = setInterval(timerTask, 10);
 
@@ -108,7 +109,7 @@ const TETRIS = (() => {
         if (!colisionSuperior()) {
             if (figuraActualAleatoria.colisionDetectada) { 
                 console.log('colisionada');
-                //filaRellena();
+                comprobarFilasRellenas();
                 figuraActualAleatoria = generarfigura();
             }
         } else { clearInterval(juego); }
@@ -120,23 +121,23 @@ const TETRIS = (() => {
         return (figuraActualAleatoria.colisionDetectada && tableroArray[BLOQUE_GENERADOR_DE_PIEZA].color != null) ? true : false;
     }
 
-    function comprobarFilasRellenas () {
-        let lineasRellenadas = 0;
+    function comprobarFilasRellenas() { // Funciona, pero hay que intentar quitar el FOR.
         let coincidencias = 0;
         tableroArray.forEach( (casilla, index) => {
-            if (index != 0 && index % PIEZAS_EN_UNA_FILA == 0) coincidencias = 0;
+            if (index != 0 && index % 10 == 0) coincidencias = 0;
             if (casilla.color != null) ++coincidencias;
-            if(coincidencias == 9) ++lineasRellenadas;
+            if (coincidencias == PIEZAS_EN_UNA_FILA) {
+                for (let x = index; x >= PIEZAS_EN_UNA_FILA; x--) {
+                    tableroArray[x].color = tableroArray[x - PIEZAS_EN_UNA_FILA].color;
+                }
+            }
         });
-        // Aqui por ejemplo tenemos 0.. 2 lineas rellenadas.
-        if (lineasRellenadas != 0) {
-            
-        }
+
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // https://www.w3schools.com/graphics/game_sound.asp
-
+// https://www.youtube.com/watch?v=-FAzHyXZPm0
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 })();
@@ -151,7 +152,19 @@ const TETRIS = (() => {
 
 
 /*
+function comprobarFilasRellenas() { // Funciona, pero hay que intentar quitar el FOR.
+        let coincidencias = 0;
+        tableroArray.forEach( (casilla, index) => {
+            if (index != 0 && index % 10 == 0) coincidencias = 0;
+            if (casilla.color != null) ++coincidencias;
+            if (coincidencias == PIEZAS_EN_UNA_FILA) {
+                for (let x = index; x >= PIEZAS_EN_UNA_FILA; x--) {
+                    tableroArray[x].color = tableroArray[x - PIEZAS_EN_UNA_FILA].color;
+                }
+            }
+        });
 
+    }
     
     function iniciarPausarJuego() {
         punteroPlayPause.addEventListener('click', onOff, false);
