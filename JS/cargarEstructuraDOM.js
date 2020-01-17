@@ -46,4 +46,5 @@ document.addEventListener("DOMContentLoaded", () => {
     puntero.appendChild(document.createElement('div'));
     puntero.children[3].className = 'tablero';
     document.body.appendChild(puntero); // #Tetris.
+
 });

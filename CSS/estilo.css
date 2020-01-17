@@ -44,20 +44,20 @@ body, html {
     outline: 5px groove var(--colorBiseles);
     background: url('../IMGs/Fondo.gif');
     border: 1px solid black;
-    height: 263px;
+    height: 262px;
     width: 246px;
     margin: 10px;
 }
 
 .puntuacion > p, .lineas > p {
-    line-height: 22px;
-    font-size: 13px;
+    padding: 2px 0px;
+    font-size: 12px;
 }
 
 .puntuacion {
     border: 3px groove var(--colorBiseles);
     margin: 9px 0px 0px 9px;
-    height: 26px;
+    height: 25px;
     width: 108px;
     float: left;
 }
@@ -65,7 +65,7 @@ body, html {
 .lineas {
     border: 3px groove var(--colorBiseles);
     margin: 9px 8px 10px 10px;
-    height: 26px;
+    height: 25px;
     width: 108px;
     float: left;
 }
@@ -81,23 +81,23 @@ body, html {
 
 .estadisticas > p {
     text-decoration: underline;
-    margin-top: 10px;
+    margin-top: 2px;
 }
 
 .estadisticas > ul {
     list-style-type: none;
+    padding: 1px 0px;
+    margin-top: 6px;
 }
 
 .estadisticas > ul > li {
-    margin: 8px;
-    margin-left: 10px;
-}
-
-.estadisticas > ul > li:nth-of-type(1) {
-    margin-top: 11px;
+    margin: 4px 0px 4px 9px;
+    height: 20px;
 }
 
 .estadisticas > ul > li > p {
+    font-size: 12px;
+    padding: 2px;
     color: red;
 }
 
@@ -112,7 +112,7 @@ body, html {
 
 .estadisticas > ul > li:nth-of-type(7) > img {
     margin-left: 1px;
-    margin-top: 3px;
+    margin-top: 4px;
 }
 
 .tablero {
