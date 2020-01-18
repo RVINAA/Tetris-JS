@@ -47,4 +47,32 @@ document.addEventListener("DOMContentLoaded", () => {
     puntero.children[3].className = 'tablero';
     document.body.appendChild(puntero); // #Tetris.
 
+    // Contenedor .adicional
+    puntero = document.createElement('div');
+    puntero.className = 'adicional';
+
+    // Contenedor .nivel
+    puntero.appendChild(document.createElement('div'));
+    puntero.firstElementChild.className = 'nivel';
+    puntero.firstElementChild.appendChild(document.createElement('p'));
+    puntero.firstElementChild.firstElementChild.innerText = 'LEVEL: 0';
+
+    // Contenedor .next
+    puntero.appendChild(document.createElement('div'));
+    puntero.children[1].className = 'next';
+    puntero.children[1].appendChild(document.createElement('p'));
+    puntero.children[1].firstElementChild.innerText = 'NEXT';
+
+    // Contenedor .music
+    const TRACKS = ['MUSIC - I', '► MUSIC - 2 ◄', 'MUSIC - 3', 'MUTED - X'];
+    puntero.appendChild(document.createElement('div'));
+    puntero.children[2].className = 'musica';
+    TRACKS.forEach( (track, index) => {
+        let aPuntero = document.createElement('a');
+        if (index == 1) aPuntero.className = 'activo';
+        aPuntero.innerText = track;
+        puntero.children[2].appendChild(aPuntero);
+    });
+
+    document.body.appendChild(puntero);
 });

@@ -17,12 +17,12 @@
 }
 
 body, html {
-    background-color: var(--colorLetras);
+    background-color: black;
     font-family: 'retroGame';
     text-align: center;
 }
 
-.header, #tetris {
+.header, #tetris, .adicional {
     user-select: none;
     cursor: pointer;
 }
@@ -32,8 +32,8 @@ body, html {
     border: 1px solid black;
     background-color: black;
     font-size: 16px;
-    width: 246px;
-    margin: 10px;
+    width: 394px;
+    margin: 10px 10px 20px;
 }
 
 .header > p {
@@ -46,10 +46,11 @@ body, html {
     border: 1px solid black;
     height: 262px;
     width: 246px;
-    margin: 10px;
+    margin: 0px 10px 10px;
+    float: left;
 }
 
-.puntuacion > p, .lineas > p {
+.puntuacion > p, .lineas > p, .nivel > p {
     padding: 2px 0px;
     font-size: 12px;
 }
@@ -112,7 +113,7 @@ body, html {
 
 .estadisticas > ul > li:nth-of-type(7) > img {
     margin-left: 1px;
-    margin-top: 4px;
+    margin-top: 5px;
 }
 
 .tablero {
@@ -122,4 +123,57 @@ body, html {
     height: 202px;
     width: 102px;
     float: left;
+}
+
+.adicional {
+    outline: 5px groove var(--colorBiseles);
+    background-color: black;
+    border: 1px solid black;
+    margin-left: 10px;
+    height: 262px;
+    width: 128px;
+    float: left;
+}
+
+.nivel {
+    border: 3px groove var(--colorBiseles);
+    margin: 9px 9px 10px;
+    height: 25px;
+    width: 108px;
+}
+
+.next {
+    border: 3px groove var(--colorBiseles);
+    margin: 9px 9px 10px;
+    height: 108px;
+    width: 108px;
+}
+
+.musica {
+    border: 3px groove var(--colorBiseles);
+    margin: 9px 9px 10px;
+    height: 90px;
+    width: 108px;  
+}
+
+.musica > a {
+    display: block;
+    font-size: 11px;
+    margin: 6px 0px;
+}
+
+.musica > a:nth-of-type(1) {
+    margin-top: 5px;
+}
+
+.musica > a:hover:not(.activo) {
+    color: var(--colorBiseles);
+}
+
+.musica > a:hover:not(.activo)::before {
+    content: '► ';
+}
+
+.musica > a:hover:not(.activo)::after {
+    content: ' ◄';
 }
