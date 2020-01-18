@@ -166,6 +166,14 @@ body, html {
     margin-top: 5px;
 }
 
+.activo::before {
+    content: '► ';
+}
+
+.activo::after {
+    content: ' ◄';
+}
+
 .musica > a:hover:not(.activo) {
     color: var(--colorBiseles);
 }

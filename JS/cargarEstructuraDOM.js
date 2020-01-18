@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", () => {
     puntero.children[1].firstElementChild.innerText = 'NEXT';
 
     // Contenedor .music
-    const TRACKS = ['MUSIC - I', '► MUSIC - 2 ◄', 'MUSIC - 3', 'MUTED - X'];
+    const TRACKS = ['MUSIC - I', 'MUSIC - 2', 'MUSIC - 3', 'MUTED - X'];
     puntero.appendChild(document.createElement('div'));
     puntero.children[2].className = 'musica';
     TRACKS.forEach( (track, index) => {
