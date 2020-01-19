@@ -1,11 +1,11 @@
 const TETRIS = (() => {
     const MAX_MARGENES_TABLERO = [0, 190, 90];
-    const BLOQUE_GENERADOR_DE_PIEZA = 4;
+    const BLOQUE_GENERADOR_DE_PIEZA = 24;
     const PIEZAS_EN_UNA_FILA = 10;
     const DIMENSION_BLOQUE = 10;
     const HEIGHT_CANVAS = 200;
     const WIDTH_CANVAS = 100;
-    const VELOCIDAD = 500;
+    const VELOCIDAD = 300;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //   Creamos un canvas, posteriormente creamos un tablero donde guardaremos cada celda, su posición y un color a pintar.  //
@@ -21,10 +21,10 @@ const TETRIS = (() => {
         }
     };
 
-    let contadorX = -10; let contadorY = 0;
-    let tableroArray = new Array( (HEIGHT_CANVAS / DIMENSION_BLOQUE) * (WIDTH_CANVAS / DIMENSION_BLOQUE) ).fill('.');
+    let contadorX = -10; let contadorY = -20;
+    let tableroArray = new Array( (HEIGHT_CANVAS + 20 / DIMENSION_BLOQUE) * (WIDTH_CANVAS / DIMENSION_BLOQUE) ).fill('.');
     tableroArray = tableroArray.map( (casilla) => {
-        if (contadorX == 90) { contadorY += DIMENSION_BLOQUE; contadorX = -(DIMENSION_BLOQUE); }
+        if (contadorX == MAX_MARGENES_TABLERO[2]) { contadorY += DIMENSION_BLOQUE; contadorX = -(DIMENSION_BLOQUE); }
         return new casillaTablero(contadorX += DIMENSION_BLOQUE, contadorY);
     });
 
@@ -71,12 +71,12 @@ const TETRIS = (() => {
     
     extend(FiguraT, Figura);
     function FiguraT() {
-        // 0 const INICIO = [BLOQUE_GENERADOR_DE_PIEZA, BLOQUE_GENERADOR_DE_PIEZA + 1, BLOQUE_GENERADOR_DE_PIEZA + 2, BLOQUE_GENERADOR_DE_PIEZA + 11];
-        // 1 const INICIO = [BLOQUE_GENERADOR_DE_PIEZA, BLOQUE_GENERADOR_DE_PIEZA + 10, BLOQUE_GENERADOR_DE_PIEZA + 11, BLOQUE_GENERADOR_DE_PIEZA + 20];
-        // 2 const INICIO = [BLOQUE_GENERADOR_DE_PIEZA, BLOQUE_GENERADOR_DE_PIEZA + 10, BLOQUE_GENERADOR_DE_PIEZA + 9, BLOQUE_GENERADOR_DE_PIEZA + 11];
-        const INICIO = [BLOQUE_GENERADOR_DE_PIEZA, BLOQUE_GENERADOR_DE_PIEZA + 10, BLOQUE_GENERADOR_DE_PIEZA + 9, BLOQUE_GENERADOR_DE_PIEZA + 20];
+        const INICIO = [BLOQUE_GENERADOR_DE_PIEZA, BLOQUE_GENERADOR_DE_PIEZA + 1, BLOQUE_GENERADOR_DE_PIEZA + 2, BLOQUE_GENERADOR_DE_PIEZA + 11];
+        //const INICIO = [BLOQUE_GENERADOR_DE_PIEZA, BLOQUE_GENERADOR_DE_PIEZA + 10, BLOQUE_GENERADOR_DE_PIEZA + 11, BLOQUE_GENERADOR_DE_PIEZA + 20];
+        //const INICIO = [BLOQUE_GENERADOR_DE_PIEZA, BLOQUE_GENERADOR_DE_PIEZA + 10, BLOQUE_GENERADOR_DE_PIEZA + 9, BLOQUE_GENERADOR_DE_PIEZA + 11];
+        // 3 const INICIO = [BLOQUE_GENERADOR_DE_PIEZA, BLOQUE_GENERADOR_DE_PIEZA + 10, BLOQUE_GENERADOR_DE_PIEZA + 9, BLOQUE_GENERADOR_DE_PIEZA + 20];
         const REFERENCIA = this;
-        let posicion = 3;
+        let posicion = 0;
 
         Figura.call(this, INICIO, 'purple');
         window.addEventListener('keydown', moverFigura, false);
@@ -117,68 +117,60 @@ const TETRIS = (() => {
                     }
                     break;
                 case 'ArrowUp':
-                    REFERENCIA.bloques = girarFigura(REFERENCIA.bloques);
-                    pintarTablero();
+                    if (++posicion == 4) posicion = 0;
+                    REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
+                        return girarFigura(bloque, index, REFERENCIA.color);
+                    });
                     break;
             }
         }
-        
-        function girarFigura(bloques) { // Hay bugs y gira mal revisar 
-            posicion = (++posicion == 4) ? 0 : posicion; 
+            /*               0          0          0   
+             *    0  1  2    1  2    2  1  3    2  1
+             *       3       3                     3
+             */
+        function girarFigura(bloque, index, color) { // Hay bugs y gira mal revisar 
             switch(posicion) {
                 case 0:
-                    if (true) {
-                        return bloques.map( (bloque, index) => {
-                            if (index == 0) {
-                                tableroArray[bloque].color = null;
-                                return bloque + 9;
-                            }
-                            if (index == 2) {
-                                tableroArray[bloque].color = null;
-                                return bloque + 2;
-                            }
+                    switch(index) {
+                        case 0:
+                            tableroArray[bloque].color = null;
+                            return bloque + 9;
+                        case 2:
+                            tableroArray[bloque + 2].color = color;
+                            return bloque + 2;
+                        default:
                             return bloque;
-                        });
                     }
                 case 1:
-                    if (true) {
-                        return bloques.map( (bloque, index) => {
-                            if (index == 0) {
-                                tableroArray[bloque].color = null;
-                                return bloque - 9;
-                            }
+                    switch(index) {
+                        case 0:
+                            tableroArray[bloque].color = null;
+                            tableroArray[bloque - 9].color = color;
+                            return bloque - 9;
+                        default:
                             return bloque;
-                        });
                     }
                 case 2:
-                    if (true) {
-                        return bloques.map( (bloque, index) => {
-                            if (index == 2) {
-                                tableroArray[bloque].color = null;
-                                return bloque - 2;
-                            }
-                            if (index == 3) {
-                                tableroArray[bloque].color = null;
-                                return bloque - 9;
-                            }
+                    switch(index) {
+                        case 2:
+                            tableroArray[bloque - 2].color = color;
+                            return bloque - 2;
+                        case 3:
+                            tableroArray[bloque].color = null;
+                            return bloque - 9;
+                        default:
                             return bloque;
-                        });
                     }
                 case 3:
-                    if (true) {
-                        return bloques.map( (bloque, index) => {
-                            if (index == 3) {
-                                tableroArray[bloque].color = null;
-                                return bloque + 9;
-                            }
+                    switch(index) {
+                        case 3:
+                            tableroArray[bloque].color = null;
+                            tableroArray[bloque + 9].color = color;
+                            return bloque + 9;
+                        default:
                             return bloque;
-                        });
                     }
             }
-        }
-
-        function comprobarGiroPosicion_0() {
-            
         }
 
         function comprobarColisionesDescendientes(bloques) {
@@ -203,10 +195,7 @@ const TETRIS = (() => {
                             tableroArray[bloques[3] + PIEZAS_EN_UNA_FILA].color != null;
             }
         }
-            /*               0          0          0   
-             *    0  1  2    1  2    2  1  3    2  1
-             *       3       3                     3
-             */
+
         function comprobarColisionIzquierda(bloques) {
             switch(posicion) {
                 case 0:
@@ -252,10 +241,7 @@ const TETRIS = (() => {
                             tableroArray[bloques[3] + 1].color == null; 
             }
         }
-            /*               0          0          0   
-             *    0  1  2    1  2    2  1  3    2  1
-             *       3       3                     3
-             */
+
         function desplazarPiramideParaLaIzquierda(bloque, index, color) {
             switch(posicion) {
                 case 0:
