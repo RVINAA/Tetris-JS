@@ -1,6 +1,6 @@
 const TETRIS = (() => {
     const MAX_MARGENES_TABLERO = [0, 190, 90];
-    const BLOQUE_GENERADOR_DE_PIEZA = 24;
+    const BLOQUE_GENERADOR_DE_PIEZA = 4;
     const PIEZAS_EN_UNA_FILA = 10;
     const DIMENSION_BLOQUE = 10;
     const HEIGHT_CANVAS = 200;
@@ -21,8 +21,8 @@ const TETRIS = (() => {
         }
     };
 
-    let contadorX = -10; let contadorY = -20;
-    let tableroArray = new Array( (HEIGHT_CANVAS + 20 / DIMENSION_BLOQUE) * (WIDTH_CANVAS / DIMENSION_BLOQUE) ).fill('.');
+    let contadorX = -10; let contadorY = 0;
+    let tableroArray = new Array( (HEIGHT_CANVAS / DIMENSION_BLOQUE) * (WIDTH_CANVAS / DIMENSION_BLOQUE) ).fill('.');
     tableroArray = tableroArray.map( (casilla) => {
         if (contadorX == MAX_MARGENES_TABLERO[2]) { contadorY += DIMENSION_BLOQUE; contadorX = -(DIMENSION_BLOQUE); }
         return new casillaTablero(contadorX += DIMENSION_BLOQUE, contadorY);
@@ -70,7 +70,7 @@ const TETRIS = (() => {
     }
     
     extend(FiguraT, Figura);
-    function FiguraT() {
+    function FiguraT() { // Añadir cuando poder girar y ver si cambiarlo a pulsacion y no mantener pulsado
         const INICIO = [BLOQUE_GENERADOR_DE_PIEZA, BLOQUE_GENERADOR_DE_PIEZA + 1, BLOQUE_GENERADOR_DE_PIEZA + 2, BLOQUE_GENERADOR_DE_PIEZA + 11];
         //const INICIO = [BLOQUE_GENERADOR_DE_PIEZA, BLOQUE_GENERADOR_DE_PIEZA + 10, BLOQUE_GENERADOR_DE_PIEZA + 11, BLOQUE_GENERADOR_DE_PIEZA + 20];
         //const INICIO = [BLOQUE_GENERADOR_DE_PIEZA, BLOQUE_GENERADOR_DE_PIEZA + 10, BLOQUE_GENERADOR_DE_PIEZA + 9, BLOQUE_GENERADOR_DE_PIEZA + 11];
