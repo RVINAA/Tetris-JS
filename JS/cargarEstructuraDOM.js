@@ -80,8 +80,19 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function elegirSoundtrack(evt) {
         if (evt.target.tagName == 'A' && evt.target.className != 'activo') {
-            console.log('a');
+            document.querySelector('.activo').classList.remove('activo');
+            evt.target.className = 'activo';
+            switch(evt.target.text) {
+                case TRACKS[0]:
+                    // Actualizar música..
+                    break;
+                case TRACKS[1]:
+                    break;
+                case TRACKS[2]:
+                    break;
+                case TRACKS[3]:
+                    break;
+            }
         }
     }
-
 });
