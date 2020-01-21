@@ -65,13 +65,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Contenedor -> .music
     puntero.appendChild(document.createElement('div'));
+    puntero.children[2].addEventListener('click', elegirSoundtrack, false);
     puntero.children[2].className = 'musica';
+    
     TRACKS.forEach( (track, index) => {
         let aPuntero = document.createElement('a');
         if (index == 1) aPuntero.className = 'activo';
         aPuntero.innerText = track;
+
         puntero.children[2].appendChild(aPuntero);
     });
 
     document.body.appendChild(puntero);
+
+    function elegirSoundtrack(evt) {
+        if (evt.target.tagName == 'A' && evt.target.className != 'activo') {
+            console.log('a');
+        }
+    }
+
 });

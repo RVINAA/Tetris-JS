@@ -404,9 +404,15 @@ const TETRIS = (() => {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     let figuraActual = generarFigura();
-    let juego = setInterval(timerTask, 10);
+    let request;
 
-    function timerTask() {
+    const performAnimation = () => {
+      request = requestAnimationFrame(performAnimation);
+      actualizarCanvas();
+    }
+    requestAnimationFrame(performAnimation);
+
+    function actualizarCanvas() {
         canvasPantalla.mostrar(); // Update.
         if (!detectarColisionBordeSuperior()) {
             if (figuraActual.colisionDetectada) { 
@@ -414,7 +420,7 @@ const TETRIS = (() => {
                 comprobarFilasRellenas();
                 figuraActual = generarFigura();
             }
-        } else clearInterval(juego);
+        } else cancelAnimationFrame(request);
         pintarTablero();
     }
 
