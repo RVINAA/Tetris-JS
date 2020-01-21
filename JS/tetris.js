@@ -1,5 +1,5 @@
 const TETRIS = (() => {
-    const MAX_MARGENES_TABLERO = [0, 190, 90];
+    const MAX_MARGENES_TABLERO = [0, 190, 90, 0];
     const BLOQUE_GENERADOR_DE_PIEZA = 4;
     const PIEZAS_EN_UNA_FILA = 10;
     const DIMENSION_BLOQUE = 10;
@@ -70,11 +70,8 @@ const TETRIS = (() => {
     }
     
     extend(FiguraT, Figura);
-    function FiguraT() { // Añadir cuando poder girar y ver si cambiarlo a pulsacion y no mantener pulsado
+    function FiguraT() {
         const INICIO = [BLOQUE_GENERADOR_DE_PIEZA, BLOQUE_GENERADOR_DE_PIEZA + 1, BLOQUE_GENERADOR_DE_PIEZA + 2, BLOQUE_GENERADOR_DE_PIEZA + 11];
-        //const INICIO = [BLOQUE_GENERADOR_DE_PIEZA, BLOQUE_GENERADOR_DE_PIEZA + 10, BLOQUE_GENERADOR_DE_PIEZA + 11, BLOQUE_GENERADOR_DE_PIEZA + 20];
-        //const INICIO = [BLOQUE_GENERADOR_DE_PIEZA, BLOQUE_GENERADOR_DE_PIEZA + 10, BLOQUE_GENERADOR_DE_PIEZA + 9, BLOQUE_GENERADOR_DE_PIEZA + 11];
-        // 3 const INICIO = [BLOQUE_GENERADOR_DE_PIEZA, BLOQUE_GENERADOR_DE_PIEZA + 10, BLOQUE_GENERADOR_DE_PIEZA + 9, BLOQUE_GENERADOR_DE_PIEZA + 20];
         const REFERENCIA = this;
         let posicion = 0;
 
@@ -115,12 +112,15 @@ const TETRIS = (() => {
                             return desplazarPiramideParaAbajo(bloque, index, REFERENCIA.color);
                         });
                     }
-                    break;
+                    break;  
                 case 'ArrowUp':
                     if (++posicion == 4) posicion = 0;
-                    REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
-                        return girarFigura(bloque, index, REFERENCIA.color);
-                    });
+                    if (comprobarColisionRotacionDisponible(REFERENCIA.bloques)) {
+                        REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
+                            return girarFigura(bloque, index, REFERENCIA.color);
+                        });
+                        
+                    } else if (--posicion == -1) posicion = 3;
                     break;
             }
         }
@@ -128,7 +128,7 @@ const TETRIS = (() => {
              *    0  1  2    1  2    2  1  3    2  1
              *       3       3                     3
              */
-        function girarFigura(bloque, index, color) { // Hay bugs y gira mal revisar 
+        function girarFigura(bloque, index, color) {
             switch(posicion) {
                 case 0:
                     switch(index) {
@@ -173,11 +173,24 @@ const TETRIS = (() => {
             }
         }
 
+        function comprobarColisionRotacionDisponible(bloques) {
+            switch(posicion) {
+                case 0:
+                    return tableroArray[bloques[1]].x < MAX_MARGENES_TABLERO[2] && tableroArray[bloques[2] + 2].color == null;
+                case 1:
+                    return tableroArray[bloques[1]].y > MAX_MARGENES_TABLERO[3] && tableroArray[bloques[0] - 9].color == null;
+                case 2:
+                    return tableroArray[bloques[1]].x > MAX_MARGENES_TABLERO[0] && tableroArray[bloques[2] - 2].color == null;
+                case 3:
+                    return tableroArray[bloques[1]].y < MAX_MARGENES_TABLERO[1] && tableroArray[bloques[3] + 9].color == null;
+            }
+        }
+
         function comprobarColisionesDescendientes(bloques) {
             switch(posicion) {
                 case 0:
                     return  tableroArray[bloques[3]].y == MAX_MARGENES_TABLERO[1] || 
-                            tableroArray[bloques[0] + PIEZAS_EN_UNA_FILA].color != null || 
+                            tableroArray[bloques[0] + PIEZAS_EN_UNA_FILA].color != null ||
                             tableroArray[bloques[2] + PIEZAS_EN_UNA_FILA].color != null || 
                             tableroArray[bloques[3] + PIEZAS_EN_UNA_FILA].color != null;
                 case 1:
