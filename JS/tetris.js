@@ -71,6 +71,10 @@ const TETRIS = (() => {
     
     extend(FiguraT, Figura);
     function FiguraT() {
+        /*               0          0          0   
+         *    0  1  2    1  2    2  1  3    2  1
+         *       3       3                     3
+         */
         const INICIO = [BLOQUE_GENERADOR_DE_PIEZA, BLOQUE_GENERADOR_DE_PIEZA + 1, BLOQUE_GENERADOR_DE_PIEZA + 2, BLOQUE_GENERADOR_DE_PIEZA + 11];
         const REFERENCIA = this;
         let posicion = 0;
@@ -124,10 +128,7 @@ const TETRIS = (() => {
                     break;
             }
         }
-            /*               0          0          0   
-             *    0  1  2    1  2    2  1  3    2  1
-             *       3       3                     3
-             */
+
         function girarFigura(bloque, index, color) {
             switch(posicion) {
                 case 0:
