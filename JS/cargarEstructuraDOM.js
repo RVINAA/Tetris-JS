@@ -79,6 +79,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(puntero);
 
     let soundTrack = new Audio();
+    soundTrack.volume = 0.4;
     soundTrack.loop = true;
 
     function elegirSoundtrack(evt) {

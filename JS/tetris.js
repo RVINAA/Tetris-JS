@@ -13,14 +13,14 @@ const TETRIS = ( () => {
         'VELOCIDAD' : 300
     };
 
-    const SONIDOS = {
-        'DESPLAZAR' : new Audio(),
-        'POOR_LINE' : new Audio(),
-        'GOOD_LINE' : new Audio(),
-        'LEVEL_UP' : new Audio(),
-        'COLISION' : new Audio(),
-        'SPIN' : new Audio()
-    }
+    /*const SONIDOS = {
+        'DESPLAZAR' : new Audio('SOUND/FX - Desplazar.mp3'),
+        'POOR_LINE' : new Audio('SOUND/FX - POOR LINE.mp3'),
+        'GOOD_LINE' : new Audio('SOUND/FX - GOOD LINE.mp3'),
+        'LEVEL_UP' : new Audio('SOUND/FX - Level UP.mp3'),
+        'COLISION' : new Audio('SOUND/FX - Colision.mp3'),
+        'SPIN' : new Audio('SOUND/FX - Spin.mp3')
+    }*/
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //   Creamos un canvas, posteriormente creamos un tablero donde guardaremos cada celda, su posición y un color a pintar.  //
@@ -74,7 +74,7 @@ const TETRIS = ( () => {
     }
 
     function generarFigura() { // Hasta que hagamos más figuras.
-        return new FiguraT();
+        return new FiguraC();
     }
 
     function Figura(array, color) {
@@ -100,8 +100,9 @@ const TETRIS = ( () => {
         let timerFiguraDescenso = setInterval( () => {
             if (comprobarColisionesDescendientes(this.bloques)) {
                 window.removeEventListener('keydown', moverFigura, false);
+                new Audio('SOUND/FX - Colision.mp3').play();
                 clearInterval(timerFiguraDescenso);
-                this.colisionDetectada = true;
+                this.colisionDetectada = true;      
             } else {
                 this.bloques = this.bloques.map( (bloque, index) => {
                     return desplazarPiramideParaAbajo(bloque, index, this.color);
@@ -116,6 +117,7 @@ const TETRIS = ( () => {
                         REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
                             return desplazarPiramideParaLaIzquierda(bloque, index, REFERENCIA.color);
                         });
+                        new Audio('SOUND/FX - Desplazar.mp3').play();
                     }
                     break;
                 case 'ArrowRight':
@@ -123,6 +125,7 @@ const TETRIS = ( () => {
                         REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
                            return desplazarPiramideParaLaDerecha(bloque, index, REFERENCIA.color);
                         });
+                        new Audio('SOUND/FX - Desplazar.mp3').play();
                     }
                     break;
                 case 'ArrowDown':
@@ -138,7 +141,7 @@ const TETRIS = ( () => {
                         REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
                             return girarFigura(bloque, index, REFERENCIA.color);
                         });
-                        
+                        new Audio('SOUND/FX - Spin.mp3').play();
                     } else if (--posicion == -1) posicion = 3;
                     break;
             }
@@ -344,6 +347,7 @@ const TETRIS = ( () => {
         let timerFiguraDescenso = setInterval( () => {
             if (comprobarColisionesDescendientes(this.bloques)) {
                 window.removeEventListener('keydown', moverFigura, false);
+                new Audio('SOUND/FX - Colision.mp3').play();
                 clearInterval(timerFiguraDescenso);
                 this.colisionDetectada = true;
             } else {
@@ -360,6 +364,7 @@ const TETRIS = ( () => {
                         REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
                             return desplazarCuadradoParaLaIzquierda(bloque, index, REFERENCIA.color);
                         });
+                        new Audio('SOUND/FX - Desplazar.mp3').play();
                     }
                     break;
                 case 'ArrowRight':
@@ -367,6 +372,7 @@ const TETRIS = ( () => {
                         REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
                             return desplazarCuadradoParaLaDerecha(bloque, index, REFERENCIA.color);
                         });
+                        new Audio('SOUND/FX - Desplazar.mp3').play();
                     }
                     break;
                 case 'ArrowDown':
@@ -376,6 +382,9 @@ const TETRIS = ( () => {
                         });
                     }
                     break;
+                    case 'ArrowUp':
+                        new Audio('SOUND/FX - Spin.mp3').play();
+                        break;
             }
         }
 
