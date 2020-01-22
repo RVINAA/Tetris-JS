@@ -1,11 +1,11 @@
-const TETRIS = (() => {
+const TETRIS = ( () => {
     const MAX_MARGENES_TABLERO = [0, 190, 90, 0];
     const BLOQUE_GENERADOR_DE_PIEZA = 4;
     const PIEZAS_EN_UNA_FILA = 10;
     const DIMENSION_BLOQUE = 10;
     const HEIGHT_CANVAS = 200;
     const WIDTH_CANVAS = 100;
-    const VELOCIDAD = 300;
+    let VELOCIDAD = 300;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //   Creamos un canvas, posteriormente creamos un tablero donde guardaremos cada celda, su posición y un color a pintar.  //

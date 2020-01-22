@@ -67,16 +67,17 @@ document.addEventListener("DOMContentLoaded", () => {
     puntero.appendChild(document.createElement('div'));
     puntero.children[2].addEventListener('click', elegirSoundtrack, false);
     puntero.children[2].className = 'musica';
-    
+
     TRACKS.forEach( (track, index) => {
         let aPuntero = document.createElement('a');
-        if (index == 1) aPuntero.className = 'activo';
         aPuntero.innerText = track;
-
+        if (index == 3) aPuntero.className = 'activo';
         puntero.children[2].appendChild(aPuntero);
     });
 
     document.body.appendChild(puntero);
+
+    let soundTrack = new Audio();
 
     function elegirSoundtrack(evt) {
         if (evt.target.tagName == 'A' && evt.target.className != 'activo') {
@@ -84,13 +85,13 @@ document.addEventListener("DOMContentLoaded", () => {
             evt.target.className = 'activo';
             switch(evt.target.text) {
                 case TRACKS[0]:
-                    // Actualizar música..
-                    break;
                 case TRACKS[1]:
-                    break;
                 case TRACKS[2]:
+                    soundTrack.src = 'SOUND/' + evt.target.text + '.mp3';
+                    soundTrack.play();
                     break;
                 case TRACKS[3]:
+                    soundTrack.pause();
                     break;
             }
         }
