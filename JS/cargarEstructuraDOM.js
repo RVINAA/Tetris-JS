@@ -97,4 +97,10 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
     }
+
+    // Cada vez que el usuario cambie de pestaña, detenemos la música.
+    document.addEventListener('visibilitychange', () => {
+        if (soundTrack.src != null && !soundTrack.paused) soundTrack.pause();
+        else if (soundTrack.src != null && soundTrack.paused) soundTrack.play();
+    }, false);
 });
