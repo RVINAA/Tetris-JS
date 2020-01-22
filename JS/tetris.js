@@ -13,6 +13,15 @@ const TETRIS = ( () => {
         'VELOCIDAD' : 300
     };
 
+    const SONIDOS = {
+        'DESPLAZAR' : new Audio(),
+        'POOR_LINE' : new Audio(),
+        'GOOD_LINE' : new Audio(),
+        'LEVEL_UP' : new Audio(),
+        'COLISION' : new Audio(),
+        'SPIN' : new Audio()
+    }
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //   Creamos un canvas, posteriormente creamos un tablero donde guardaremos cada celda, su posición y un color a pintar.  //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -441,6 +450,7 @@ const TETRIS = ( () => {
         });
         figuraActual = generarFigura();
     }
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // https://www.w3schools.com/graphics/game_sound.asp
