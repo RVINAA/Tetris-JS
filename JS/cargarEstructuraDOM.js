@@ -1,4 +1,5 @@
 document.addEventListener("DOMContentLoaded", () => {
+
     const BLOQUES = ['block-T', 'block-L2', 'block-N1', 'block-C', 'block-N2', 'block-L1', 'block-I'];
     const TRACKS = ['MUSIC - I', 'MUSIC - 2', 'MUSIC - 3', 'MUTED - X'];
     document.title = 'Tetris JS';
@@ -100,7 +101,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Cada vez que el usuario cambie de pestaña, detenemos la música.
     document.addEventListener('visibilitychange', () => {
-        if (soundTrack.src != null && !soundTrack.paused) soundTrack.pause();
-        else if (soundTrack.src != null && soundTrack.paused) soundTrack.play();
+        if (soundTrack.src != false && !soundTrack.paused) soundTrack.pause();
+        else if (soundTrack.src != false && soundTrack.paused) soundTrack.play();
     }, false);
+    
 });
