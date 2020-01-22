@@ -78,6 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(puntero);
 
     let soundTrack = new Audio();
+    soundTrack.loop = true;
 
     function elegirSoundtrack(evt) {
         if (evt.target.tagName == 'A' && evt.target.className != 'activo') {
