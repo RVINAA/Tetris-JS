@@ -82,7 +82,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function elegirSoundtrack(evt) {
         if (evt.target.tagName == 'A' && evt.target.className != 'activo') {
-            document.querySelector('.activo').classList.remove('activo');
+            document.querySelector('.activo').removeAttribute("class");
             evt.target.className = 'activo';
             switch(evt.target.text) {
                 case TRACKS[0]:

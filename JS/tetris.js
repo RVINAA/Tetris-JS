@@ -1,4 +1,15 @@
 const TETRIS = ( () => {
+    const CONFIG = {
+        'MARGEN_TABLERO_MIN_X' : 0,
+        'MARGEN_TABLERO_MIN_Y' : 0,
+        'MARGEN_TABLERO_MAX_X' : 90,
+        'MARGEN_TABLERO_MAX_Y' : 190,
+        'BLOQUE_GENERADOR_DE_PIEZA' : 4,
+        'PIEZAS_EN_UNA_FILA' : 10,
+        'DIMENSION_BLOQUE' : 10,
+        'HEIGHT_CANVAS' : 200,
+        'WIDTH_CANVAS' : 100
+    };
     const MAX_MARGENES_TABLERO = [0, 190, 90, 0];
     const BLOQUE_GENERADOR_DE_PIEZA = 4;
     const PIEZAS_EN_UNA_FILA = 10;
