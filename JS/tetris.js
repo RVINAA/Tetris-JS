@@ -13,15 +13,6 @@ const TETRIS = ( () => {
         'VELOCIDAD' : 300
     };
 
-    /*const SONIDOS = {
-        'DESPLAZAR' : new Audio('SOUND/FX - Desplazar.mp3'),
-        'POOR_LINE' : new Audio('SOUND/FX - POOR LINE.mp3'),
-        'GOOD_LINE' : new Audio('SOUND/FX - GOOD LINE.mp3'),
-        'LEVEL_UP' : new Audio('SOUND/FX - Level UP.mp3'),
-        'COLISION' : new Audio('SOUND/FX - Colision.mp3'),
-        'SPIN' : new Audio('SOUND/FX - Spin.mp3')
-    }*/
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //   Creamos un canvas, posteriormente creamos un tablero donde guardaremos cada celda, su posición y un color a pintar.  //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +65,7 @@ const TETRIS = ( () => {
     }
 
     function generarFigura() { // Hasta que hagamos más figuras.
-        return new FiguraC();
+        return new FiguraT();
     }
 
     function Figura(array, color) {
@@ -109,8 +100,9 @@ const TETRIS = ( () => {
                 });
             }
          }, CONFIG.VELOCIDAD );
-
+        
         function moverFigura(evt) {
+
             switch (evt.code) {
                 case 'ArrowLeft':
                     if (comprobarColisionIzquierda(REFERENCIA.bloques)) {

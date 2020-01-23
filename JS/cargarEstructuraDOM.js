@@ -2,7 +2,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const BLOQUES = ['block-T', 'block-L2', 'block-N1', 'block-C', 'block-N2', 'block-L1', 'block-I'];
     const TRACKS = ['MUSIC - I', 'MUSIC - 2', 'MUSIC - 3', 'MUTED - X'];
-    document.title = 'Tetris JS';
 
     // Cabecera -> .titulo
     let puntero = document.createElement('div');
@@ -95,6 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     break;
                 case TRACKS[3]:
                     soundTrack.pause();
+                    soundTrack = new Audio();
                     break;
             }
         }
