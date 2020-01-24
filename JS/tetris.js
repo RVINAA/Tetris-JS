@@ -128,6 +128,7 @@ const TETRIS = ( () => {
                     }
                     break;  
                 case 'ArrowUp':
+                    if (evt.repeat == true) return false;
                     if (++posicion == 4) posicion = 0;
                     if (comprobarColisionRotacionDisponible(REFERENCIA.bloques)) {
                         REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
@@ -350,7 +351,7 @@ const TETRIS = ( () => {
          }, CONFIG.VELOCIDAD );
 
         function moverFigura(evt) {
-            switch (evt.code) {
+            switch (evt.code == true) {
                 case 'ArrowLeft':
                     if (comprobarColisionIzquierda(REFERENCIA.bloques)) {
                         REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
@@ -375,6 +376,7 @@ const TETRIS = ( () => {
                     }
                     break;
                     case 'ArrowUp':
+                        if (evt.repeat) return false;
                         new Audio('SOUND/FX - Spin.mp3').play();
                         break;
             }
