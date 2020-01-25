@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const BLOQUES = ['block-T', 'block-L2', 'block-N1', 'block-C', 'block-N2', 'block-L1', 'block-I'];
     const TRACKS = ['MUSIC - I', 'MUSIC - 2', 'MUSIC - 3', 'MUTED - X'];
 
-    document.title = ' - 𝑻𝑬𝑻𝑹𝑰𝑺 - '
+    document.title = '⸺ ❌ 𝑻 𝑬 𝑻 𝑹 𝑰 𝑺 ❌ ⸺'
 
     // Cabecera -> .titulo
     let puntero = document.createElement('div');

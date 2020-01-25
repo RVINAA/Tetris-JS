@@ -1,7 +1,7 @@
 const TETRIS = ( () => {
 
     const CONFIG = {
-        'BLOQUE_GENERADOR_DE_PIEZA' : 4,// 4
+        'BLOQUE_GENERADOR_DE_PIEZA' : 4,
         'MARGEN_TABLERO_MAX_Y' : 190,
         'MARGEN_TABLERO_MAX_X' : 90,
         'MARGEN_TABLERO_MIN_Y' : 0,
@@ -59,7 +59,7 @@ const TETRIS = ( () => {
 //     Definimos la clase figura de la que heredan las otras figuras y una función que genera aleatoriamente figuras.     //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const extend = function(Hijo, Padre) {
+    const extend = (Hijo, Padre) => {
         Hijo.prototype = Object.create(Padre.prototype);
         Hijo.prototype.constuctor = Hijo;
     }
@@ -432,7 +432,6 @@ const TETRIS = ( () => {
          *                      3
          */
         const INICIO = [CONFIG.BLOQUE_GENERADOR_DE_PIEZA - 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2];
-        //const INICIO = [CONFIG.BLOQUE_GENERADOR_DE_PIEZA - 20, CONFIG.BLOQUE_GENERADOR_DE_PIEZA - 10, CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 10];
         const REFERENCIA = this;
         let posicion = 0;
 
@@ -481,12 +480,12 @@ const TETRIS = ( () => {
                 case 'ArrowUp':
                     if (evt.repeat == true) return false;
                     if (++posicion == 2) posicion = 0;
-                    //if (comprobarColisionRotacionDisponible(REFERENCIA.bloques)) {
+                    if (comprobarColisionRotacionDisponible(REFERENCIA.bloques)) {
                         REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
                             return girarFigura(bloque, index, REFERENCIA.color);
                         });
                         new Audio('SOUND/FX - Spin.mp3').play();
-                    //} else if (--posicion == -1) posicion = 1;
+                    } else if (--posicion == -1) posicion = 1;
                     break;
             }
         }
@@ -529,26 +528,16 @@ const TETRIS = ( () => {
                     }
             }
         }
-        /* 
-         *                      0
-         *                      1
-         *      0  1  2  3      2   
-         *                      3
-         */
-        // Falta por añadir comprobarcolisi...
+
         function comprobarColisionRotacionDisponible(bloques) {
             switch(posicion) {
                 case 0:
-                    return tableroArray[bloques[1]].x < CONFIG.MARGEN_TABLERO_MAX_X && tableroArray[bloques[2] + 2].color == null;
+                    return tableroArray[bloques[2]].x > (CONFIG.MARGEN_TABLERO_MIN_X + 10) && tableroArray[bloques[2]].x < CONFIG.MARGEN_TABLERO_MAX_X && tableroArray[bloques[0] + 18].color == null && tableroArray[bloques[1] + 9].color == null && tableroArray[bloques[3] - 9].color == null;
                 case 1:
-                    return tableroArray[bloques[1]].y > CONFIG.MARGEN_TABLERO_MIN_Y && tableroArray[bloques[0] - 9].color == null;
-                case 2:
-                    return tableroArray[bloques[1]].x > CONFIG.MARGEN_TABLERO_MIN_X && tableroArray[bloques[2] - 2].color == null;
-                case 3:
-                    return tableroArray[bloques[1]].y < CONFIG.MARGEN_TABLERO_MAX_Y && tableroArray[bloques[3] + 9].color == null;
+                    return tableroArray[bloques[2]].y > (CONFIG.MARGEN_TABLERO_MIN_Y + 10) && tableroArray[bloques[2]].y < (CONFIG.MARGEN_TABLERO_MAX_Y) && tableroArray[bloques[0] - 18].color == null && tableroArray[bloques[1] - 9].color == null && tableroArray[bloques[3] + 9].color == null;
             }
         }
-        // Estos cuatro terminados.
+
         function comprobarColisionIzquierda(bloques) {
             switch(posicion) {
                 case 0:
@@ -654,17 +643,24 @@ const TETRIS = ( () => {
         return (figuraActual.colisionDetectada && tableroArray[CONFIG.BLOQUE_GENERADOR_DE_PIEZA].color != null) ? true : false;
     }
 
-    function comprobarFilasRellenas() { // Metodo dudoso, pendiente de corregir, por si acaso.
+    function comprobarFilasRellenas() {
+        let lineasCompletadas = 0;
         let coincidencias = 0;
+
         tableroArray.forEach( (casilla, index) => {
             if (index != 0 && index % 10 == 0) coincidencias = 0;
             if (casilla.color != null) ++coincidencias;
             if (coincidencias == CONFIG.PIEZAS_EN_UNA_FILA) {
-                for (let x = index; x >= CONFIG.PIEZAS_EN_UNA_FILA; x--) {
-                    tableroArray[x].color = tableroArray[x - CONFIG.PIEZAS_EN_UNA_FILA].color;
+                for (let x = index; x >= 0; x--) {
+                    if (x >= CONFIG.PIEZAS_EN_UNA_FILA) tableroArray[x].color = tableroArray[x - CONFIG.PIEZAS_EN_UNA_FILA].color;
+                    else tableroArray[x].color = null;
                 }
+                ++lineasCompletadas;
             }
         });
+
+        if (lineasCompletadas > 0 && lineasCompletadas < 4) new Audio('SOUND/FX - POOR LINE.mp3').play();
+        else if(lineasCompletadas == 4) new Audio('SOUND/FX - GOOD LINE.mp3').play();
         figuraActual = generarFigura();
     }
 
