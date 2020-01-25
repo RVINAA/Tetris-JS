@@ -1,7 +1,7 @@
 const TETRIS = ( () => {
 
     const CONFIG = {
-        'BLOQUE_GENERADOR_DE_PIEZA' : 4,
+        'BLOQUE_GENERADOR_DE_PIEZA' : 4,// 4
         'MARGEN_TABLERO_MAX_Y' : 190,
         'MARGEN_TABLERO_MAX_X' : 90,
         'MARGEN_TABLERO_MIN_Y' : 0,
@@ -10,7 +10,7 @@ const TETRIS = ( () => {
         'DIMENSION_BLOQUE' : 10,
         'HEIGHT_CANVAS' : 200,
         'WIDTH_CANVAS' : 100,
-        'VELOCIDAD' : 300
+        'VELOCIDAD' : 500
     };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -65,7 +65,7 @@ const TETRIS = ( () => {
     }
 
     function generarFigura() { // Hasta que hagamos más figuras.
-        return new FiguraT();
+        return new FiguraI();
     }
 
     function Figura(array, color) {
@@ -74,10 +74,15 @@ const TETRIS = ( () => {
         this.bloques = array;
         this.color = color;
     }
-    
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//                        La parte más larga, todas las figuras que extienden de la clase Figura..                        //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     extend(FiguraT, Figura);
     function FiguraT() {
-        /*               0          0          0   
+        /*
+         *               0          0          0   
          *    0  1  2    1  2    2  1  3    2  1
          *       3       3                     3
          */
@@ -100,7 +105,7 @@ const TETRIS = ( () => {
                 });
             }
          }, CONFIG.VELOCIDAD );
-        
+
         function moverFigura(evt) {
 
             switch (evt.code) {
@@ -198,29 +203,6 @@ const TETRIS = ( () => {
             }
         }
 
-        function comprobarColisionesDescendientes(bloques) {
-            switch(posicion) {
-                case 0:
-                    return  tableroArray[bloques[3]].y == CONFIG.MARGEN_TABLERO_MAX_Y || 
-                            tableroArray[bloques[0] + CONFIG.PIEZAS_EN_UNA_FILA].color != null ||
-                            tableroArray[bloques[2] + CONFIG.PIEZAS_EN_UNA_FILA].color != null || 
-                            tableroArray[bloques[3] + CONFIG.PIEZAS_EN_UNA_FILA].color != null;
-                case 1:
-                    return  tableroArray[bloques[3]].y == CONFIG.MARGEN_TABLERO_MAX_Y ||
-                            tableroArray[bloques[2] + CONFIG.PIEZAS_EN_UNA_FILA].color != null || 
-                            tableroArray[bloques[3] + CONFIG.PIEZAS_EN_UNA_FILA].color != null;
-                case 2:
-                    return  tableroArray[bloques[1]].y == CONFIG.MARGEN_TABLERO_MAX_Y || 
-                            tableroArray[bloques[1] + CONFIG.PIEZAS_EN_UNA_FILA].color != null || 
-                            tableroArray[bloques[2] + CONFIG.PIEZAS_EN_UNA_FILA].color != null || 
-                            tableroArray[bloques[3] + CONFIG.PIEZAS_EN_UNA_FILA].color != null;
-                case 3:
-                    return  tableroArray[bloques[3]].y == CONFIG.MARGEN_TABLERO_MAX_Y ||
-                            tableroArray[bloques[2] + CONFIG.PIEZAS_EN_UNA_FILA].color != null || 
-                            tableroArray[bloques[3] + CONFIG.PIEZAS_EN_UNA_FILA].color != null;
-            }
-        }
-
         function comprobarColisionIzquierda(bloques) {
             switch(posicion) {
                 case 0:
@@ -309,6 +291,29 @@ const TETRIS = ( () => {
             }
         }
 
+        function comprobarColisionesDescendientes(bloques) {
+            switch(posicion) {
+                case 0:
+                    return  tableroArray[bloques[3]].y == CONFIG.MARGEN_TABLERO_MAX_Y || 
+                            tableroArray[bloques[0] + CONFIG.PIEZAS_EN_UNA_FILA].color != null ||
+                            tableroArray[bloques[2] + CONFIG.PIEZAS_EN_UNA_FILA].color != null || 
+                            tableroArray[bloques[3] + CONFIG.PIEZAS_EN_UNA_FILA].color != null;
+                case 1:
+                    return  tableroArray[bloques[3]].y == CONFIG.MARGEN_TABLERO_MAX_Y ||
+                            tableroArray[bloques[2] + CONFIG.PIEZAS_EN_UNA_FILA].color != null || 
+                            tableroArray[bloques[3] + CONFIG.PIEZAS_EN_UNA_FILA].color != null;
+                case 2:
+                    return  tableroArray[bloques[1]].y == CONFIG.MARGEN_TABLERO_MAX_Y || 
+                            tableroArray[bloques[1] + CONFIG.PIEZAS_EN_UNA_FILA].color != null || 
+                            tableroArray[bloques[2] + CONFIG.PIEZAS_EN_UNA_FILA].color != null || 
+                            tableroArray[bloques[3] + CONFIG.PIEZAS_EN_UNA_FILA].color != null;
+                case 3:
+                    return  tableroArray[bloques[3]].y == CONFIG.MARGEN_TABLERO_MAX_Y ||
+                            tableroArray[bloques[2] + CONFIG.PIEZAS_EN_UNA_FILA].color != null || 
+                            tableroArray[bloques[3] + CONFIG.PIEZAS_EN_UNA_FILA].color != null;
+            }
+        }
+
         function desplazarPiramideParaAbajo(bloque, index, color) {
             switch(posicion) {
                 case 0:
@@ -351,7 +356,7 @@ const TETRIS = ( () => {
          }, CONFIG.VELOCIDAD );
 
         function moverFigura(evt) {
-            switch (evt.code == true) {
+            switch (evt.code) {
                 case 'ArrowLeft':
                     if (comprobarColisionIzquierda(REFERENCIA.bloques)) {
                         REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
@@ -375,17 +380,11 @@ const TETRIS = ( () => {
                         });
                     }
                     break;
-                    case 'ArrowUp':
-                        if (evt.repeat) return false;
-                        new Audio('SOUND/FX - Spin.mp3').play();
-                        break;
+                case 'ArrowUp':
+                    if (evt.repeat == true) return false;
+                    new Audio('SOUND/FX - Spin.mp3').play();
+                    break;
             }
-        }
-
-        function comprobarColisionesDescendientes(bloques) {
-            return  tableroArray[bloques[3]].y == CONFIG.MARGEN_TABLERO_MAX_Y || 
-                    tableroArray[bloques[2] + CONFIG.PIEZAS_EN_UNA_FILA].color != null || 
-                    tableroArray[bloques[3] + CONFIG.PIEZAS_EN_UNA_FILA].color != null;
         }
 
         function comprobarColisionIzquierda(bloques) {
@@ -412,11 +411,226 @@ const TETRIS = ( () => {
             return bloque + 1;
         }
 
+        function comprobarColisionesDescendientes(bloques) {
+            return  tableroArray[bloques[3]].y == CONFIG.MARGEN_TABLERO_MAX_Y || 
+                    tableroArray[bloques[2] + CONFIG.PIEZAS_EN_UNA_FILA].color != null || 
+                    tableroArray[bloques[3] + CONFIG.PIEZAS_EN_UNA_FILA].color != null;
+        }
+
         function desplazarCuadradoParaAbajo(bloque, index, color) {
             (index == 0 || index == 1) ? tableroArray[bloque].color = null : tableroArray[bloque + CONFIG.PIEZAS_EN_UNA_FILA].color = color;
             return bloque + CONFIG.PIEZAS_EN_UNA_FILA;
         }
-    }    
+    }
+    
+    extend(FiguraI, Figura);
+    function FiguraI() {
+        /* 
+         *                      0
+         *                      1
+         *      0  1  2  3      2   
+         *                      3
+         */
+        const INICIO = [CONFIG.BLOQUE_GENERADOR_DE_PIEZA - 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2];
+        //const INICIO = [CONFIG.BLOQUE_GENERADOR_DE_PIEZA - 20, CONFIG.BLOQUE_GENERADOR_DE_PIEZA - 10, CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 10];
+        const REFERENCIA = this;
+        let posicion = 0;
+
+        Figura.call(this, INICIO, 'brown');
+        window.addEventListener('keydown', moverFigura, false);
+
+        let timerFiguraDescenso = setInterval( () => {
+            if (comprobarColisionesDescendientes(this.bloques)) {
+                window.removeEventListener('keydown', moverFigura, false);
+                new Audio('SOUND/FX - Colision.mp3').play();
+                clearInterval(timerFiguraDescenso);
+                this.colisionDetectada = true;      
+            } else {
+                this.bloques = this.bloques.map( (bloque, index) => {
+                    return desplazarLineaParaAbajo(bloque, index, this.color);
+                });
+            }
+         }, CONFIG.VELOCIDAD );
+        
+        function moverFigura(evt) {
+
+            switch (evt.code) {
+                case 'ArrowLeft':
+                    if (comprobarColisionIzquierda(REFERENCIA.bloques)) {
+                        REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
+                            return desplazarLineaParaLaIzquierda(bloque, index, REFERENCIA.color);
+                        });
+                        new Audio('SOUND/FX - Desplazar.mp3').play();
+                    }
+                    break;
+                case 'ArrowRight':
+                    if (comprobarColisionDerecha(REFERENCIA.bloques)) {
+                        REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
+                           return desplazarLineaParaLaDerecha(bloque, index, REFERENCIA.color);
+                        });
+                        new Audio('SOUND/FX - Desplazar.mp3').play();
+                    }
+                    break;
+                case 'ArrowDown':
+                    if (!comprobarColisionesDescendientes(REFERENCIA.bloques)) {
+                        REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
+                            return desplazarLineaParaAbajo(bloque, index, REFERENCIA.color);
+                        });
+                    }
+                    break;  
+                case 'ArrowUp':
+                    if (evt.repeat == true) return false;
+                    if (++posicion == 2) posicion = 0;
+                    //if (comprobarColisionRotacionDisponible(REFERENCIA.bloques)) {
+                        REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
+                            return girarFigura(bloque, index, REFERENCIA.color);
+                        });
+                        new Audio('SOUND/FX - Spin.mp3').play();
+                    //} else if (--posicion == -1) posicion = 1;
+                    break;
+            }
+        }
+        
+        function girarFigura(bloque, index, color) {
+            switch(posicion) {
+                case 0:
+                    switch(index) {
+                        case 0:
+                            tableroArray[bloque].color = null;
+                            tableroArray[bloque + 18].color = color;
+                            return bloque + 18;
+                        case 1:
+                            tableroArray[bloque].color = null;
+                            tableroArray[bloque + 9].color = color;
+                            return bloque + 9;
+                        case 3:
+                            tableroArray[bloque].color = null;
+                            tableroArray[bloque - 9].color = color;
+                            return bloque - 9;
+                        default:
+                            return bloque;
+                    }
+                case 1:
+                    switch(index) {
+                        case 0:
+                            tableroArray[bloque].color = null;
+                            tableroArray[bloque - 18].color = color;
+                            return bloque - 18;
+                        case 1:
+                            tableroArray[bloque].color = null;
+                            tableroArray[bloque - 9].color = color;
+                            return bloque - 9;
+                        case 3:
+                            tableroArray[bloque].color = null;
+                            tableroArray[bloque + 9].color = color;
+                            return bloque + 9;
+                        default:
+                            return bloque;
+                    }
+            }
+        }
+        /* 
+         *                      0
+         *                      1
+         *      0  1  2  3      2   
+         *                      3
+         */
+        // Falta por añadir comprobarcolisi...
+        function comprobarColisionRotacionDisponible(bloques) {
+            switch(posicion) {
+                case 0:
+                    return tableroArray[bloques[1]].x < CONFIG.MARGEN_TABLERO_MAX_X && tableroArray[bloques[2] + 2].color == null;
+                case 1:
+                    return tableroArray[bloques[1]].y > CONFIG.MARGEN_TABLERO_MIN_Y && tableroArray[bloques[0] - 9].color == null;
+                case 2:
+                    return tableroArray[bloques[1]].x > CONFIG.MARGEN_TABLERO_MIN_X && tableroArray[bloques[2] - 2].color == null;
+                case 3:
+                    return tableroArray[bloques[1]].y < CONFIG.MARGEN_TABLERO_MAX_Y && tableroArray[bloques[3] + 9].color == null;
+            }
+        }
+        // Estos cuatro terminados.
+        function comprobarColisionIzquierda(bloques) {
+            switch(posicion) {
+                case 0:
+                    return  tableroArray[bloques[0]].x > CONFIG.MARGEN_TABLERO_MIN_X && 
+                            tableroArray[bloques[0] - 1].color == null;
+                case 1:
+                    return  tableroArray[bloques[0]].x > CONFIG.MARGEN_TABLERO_MIN_X && 
+                            tableroArray[bloques[0] - 1].color == null &&
+                            tableroArray[bloques[1] - 1].color == null &&
+                            tableroArray[bloques[2] - 1].color == null &&
+                            tableroArray[bloques[3] - 1].color == null;
+            }
+        }
+
+        function comprobarColisionDerecha(bloques) {
+            switch(posicion) {
+                case 0:
+                    return  tableroArray[bloques[3]].x < CONFIG.MARGEN_TABLERO_MAX_X &&
+                            tableroArray[bloques[3] + 1].color == null;
+                case 1:
+                    return  tableroArray[bloques[2]].x < CONFIG.MARGEN_TABLERO_MAX_X &&
+                            tableroArray[bloques[0] + 1].color == null &&
+                            tableroArray[bloques[1] + 1].color == null &&
+                            tableroArray[bloques[2] + 1].color == null &&
+                            tableroArray[bloques[3] + 1].color == null;
+            }
+        }
+
+        function desplazarLineaParaLaIzquierda(bloque, index, color) {
+            switch(posicion) {
+                case 0:
+                    if (index == 0) tableroArray[bloque - 1].color = color;
+                    if (index == 3) tableroArray[bloque].color = null;
+                    return bloque - 1;
+                case 1:
+                    tableroArray[bloque].color = null;
+                    tableroArray[bloque - 1].color = color;
+                    return bloque - 1;
+            }
+        }
+
+        function desplazarLineaParaLaDerecha(bloque, index, color) {
+            switch(posicion) {
+                case 0:
+                    if (index == 0) tableroArray[bloque].color = null;
+                    if (index == 3) tableroArray[bloque + 1].color = color;
+                    return bloque + 1;
+                case 1:
+                    tableroArray[bloque].color = null;
+                    tableroArray[bloque + 1].color = color;
+                    return bloque + 1;
+            }
+        }
+
+        function comprobarColisionesDescendientes(bloques) {
+            switch(posicion) {
+                case 0:
+                    return  tableroArray[bloques[2]].y == CONFIG.MARGEN_TABLERO_MAX_Y ||
+                            tableroArray[bloques[0] + CONFIG.PIEZAS_EN_UNA_FILA].color != null |
+                            tableroArray[bloques[1] + CONFIG.PIEZAS_EN_UNA_FILA].color != null ||
+                            tableroArray[bloques[2] + CONFIG.PIEZAS_EN_UNA_FILA].color != null ||
+                            tableroArray[bloques[3] + CONFIG.PIEZAS_EN_UNA_FILA].color != null;
+                case 1:
+                    return  tableroArray[bloques[3]].y == CONFIG.MARGEN_TABLERO_MAX_Y ||
+                            tableroArray[bloques[3] + CONFIG.PIEZAS_EN_UNA_FILA].color != null;
+            }
+        }
+
+        function desplazarLineaParaAbajo(bloque, index, color) {
+            switch(posicion) {
+                case 0:
+                    tableroArray[bloque].color = null;
+                    tableroArray[bloque + CONFIG.PIEZAS_EN_UNA_FILA].color = color;
+                    break;
+                case 1:
+                    if (index == 0) tableroArray[bloque].color = null;
+                    if (index == 3)  tableroArray[bloque + CONFIG.PIEZAS_EN_UNA_FILA].color = color;
+                    break;
+            }
+            return bloque + CONFIG.PIEZAS_EN_UNA_FILA;
+        }
+    }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //               Creamos una figura y un timer en el que iremos pintando el juego, comprobando colisiones..               //
