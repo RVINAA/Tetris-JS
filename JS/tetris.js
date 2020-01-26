@@ -78,17 +78,8 @@ const TETRIS = ( () => {
         return celdaOcupada;
     }
 
-    const calcularFigura = () => {
-        let numeroRandom = Math.floor( (Math.random() * 70) );
-        if (numeroRandom >= 0  && numeroRandom < 10) return 'T';
-        if (numeroRandom >= 10 && numeroRandom < 20) return 'L2';
-        if (numeroRandom >= 20 && numeroRandom < 30) return 'N1';
-        if (numeroRandom >= 30 && numeroRandom < 40) return 'C';
-        if (numeroRandom >= 40 && numeroRandom < 50) return 'L1';
-        if (numeroRandom >= 50 && numeroRandom < 60) return 'N2';
-        if (numeroRandom >= 60 && numeroRandom < 70) return 'I';
-    }
- 
+    const calcularFigura = () => Object.keys(POSICIONES_INICIALES)[Math.floor( (Math.random() * 7) )];
+
     const generarFigura = codigoDeFiguraAleatoria => { // Aquí un switch que devuelve el new Figura*
         return new FiguraI();
     }
@@ -680,10 +671,10 @@ const TETRIS = ( () => {
             if (index != 0 && index % 10 == 0) coincidencias = 0;
             if (casilla.color != null) ++coincidencias;
             if (coincidencias == CONFIG.PIEZAS_EN_UNA_FILA) {
-                for (let x = index; x >= 0; x--) {
-                    if (x >= CONFIG.PIEZAS_EN_UNA_FILA) tableroArray[x].color = tableroArray[x - CONFIG.PIEZAS_EN_UNA_FILA].color;
-                    else tableroArray[x].color = null;
-                }
+                Object.keys(tableroArray.slice(0, index + 1)).reverse().map( currentIndex => {
+                    if (currentIndex >= CONFIG.PIEZAS_EN_UNA_FILA) tableroArray[currentIndex].color = tableroArray[currentIndex - CONFIG.PIEZAS_EN_UNA_FILA].color;
+                    else tableroArray[currentIndex].color = null;
+                });
                 ++lineasCompletadas;
             }
         });
