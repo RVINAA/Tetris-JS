@@ -89,13 +89,13 @@ const TETRIS = ( () => {
         if (numeroRandom >= 60 && numeroRandom < 70) return 'I';
     }
  
-    const generarFigura = numFigAleatorio => { // Aquí un switch que devuelve el new Figura*
+    const generarFigura = codigoDeFiguraAleatoria => { // Aquí un switch que devuelve el new Figura*
         return new FiguraI();
     }
 
     const actualizarFiguras = () => {
-        FIGURAS.FIG_ACTUAL = generarFigura( FIGURAS.NXT_FIGURA || calcularFigura() );
-        FIGURAS.NXT_FIGURA = 'I';//calcularFigura();
+        FIGURAS.FIG_ACTUAL = generarFigura(FIGURAS.NXT_FIGURA);
+        FIGURAS.NXT_FIGURA = calcularFigura();
     };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -654,7 +654,7 @@ const TETRIS = ( () => {
    
     const FIGURAS = {
         FIG_ACTUAL : generarFigura( calcularFigura() ),
-        NXT_FIGURA : 'I'//calcularFigura();
+        NXT_FIGURA : calcularFigura()
     }
 
     let request;
@@ -690,7 +690,6 @@ const TETRIS = ( () => {
 
         if (lineasCompletadas > 0 && lineasCompletadas < 4) new Audio('SOUND/FX - POOR LINE.mp3').play();
         else if(lineasCompletadas == 4) new Audio('SOUND/FX - GOOD LINE.mp3').play();
-
     }
 
     const gameOver = () => {
