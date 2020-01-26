@@ -1,23 +1,23 @@
 const TETRIS = ( () => {
 
     const CONFIG = {
-        'BLOQUE_GENERADOR_DE_PIEZA' : 4,
-        'MARGEN_TABLERO_MAX_Y' : 190,
-        'MARGEN_TABLERO_MAX_X' : 90,
-        'MARGEN_TABLERO_MIN_Y' : 0,
-        'MARGEN_TABLERO_MIN_X' : 0,
-        'PIEZAS_EN_UNA_FILA' : 10,
-        'DIMENSION_BLOQUE' : 10,
-        'HEIGHT_CANVAS' : 200,
-        'WIDTH_CANVAS' : 100,
-        'VELOCIDAD' : 500
+        BLOQUE_GENERADOR_DE_PIEZA : 4,
+        MARGEN_TABLERO_MAX_Y : 190,
+        MARGEN_TABLERO_MAX_X : 90,
+        MARGEN_TABLERO_MIN_Y : 0,
+        MARGEN_TABLERO_MIN_X : 0,
+        PIEZAS_EN_UNA_FILA : 10,
+        DIMENSION_BLOQUE : 10,
+        HEIGHT_CANVAS : 200,
+        WIDTH_CANVAS : 100,
+        VELOCIDAD : 500
     };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //   Creamos un canvas, posteriormente creamos un tablero donde guardaremos cada celda, su posición y un color a pintar.  //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    let canvasPantalla = {
+    const canvasPantalla = {
         canvas : document.createElement('canvas'),
         mostrar : function() {
             document.querySelector('.tablero').appendChild(this.canvas);
@@ -40,14 +40,14 @@ const TETRIS = ( () => {
         this.y = y;
     }
 
-    function pintarTablero() {
+    const pintarTablero = () => {
         tableroArray.forEach( casilla => {
             if (casilla.color != null) pintarBloque(casilla.color, casilla.x, casilla.y);
             else pintarBloque('empty', casilla.x, casilla.y);
         });
     }
 
-    function pintarBloque(color, x, y) {
+    const pintarBloque = (color, x, y) => {
         const bloque = canvasPantalla.context;
         const imagen = new Image();
         imagen.src = 'IMGs/casillas/' + color + '.png';
@@ -64,10 +64,6 @@ const TETRIS = ( () => {
         Hijo.prototype.constuctor = Hijo;
     }
 
-    function generarFigura() { // Hasta que hagamos más figuras.
-        return new FiguraI();
-    }
-
     function Figura(array, color) {
         array.forEach( bloque => tableroArray[bloque].color = color );
         this.colisionDetectada = false;
@@ -75,9 +71,46 @@ const TETRIS = ( () => {
         this.color = color;
     }
 
+    const comprobarSiSePuedeGenerarLaFigura = celdaOcupada => {
+        POSICIONES_INICIALES[FIGURAS.NXT_FIGURA].forEach( casilla => { 
+            if (tableroArray[casilla].color != null) celdaOcupada = true; 
+        });
+        return celdaOcupada;
+    }
+
+    const calcularFigura = () => {
+        let numeroRandom = Math.floor( (Math.random() * 70) );
+        if (numeroRandom >= 0  && numeroRandom < 10) return 'T';
+        if (numeroRandom >= 10 && numeroRandom < 20) return 'L2';
+        if (numeroRandom >= 20 && numeroRandom < 30) return 'N1';
+        if (numeroRandom >= 30 && numeroRandom < 40) return 'C';
+        if (numeroRandom >= 40 && numeroRandom < 50) return 'L1';
+        if (numeroRandom >= 50 && numeroRandom < 60) return 'N2';
+        if (numeroRandom >= 60 && numeroRandom < 70) return 'I';
+    }
+ 
+    const generarFigura = numFigAleatorio => { // Aquí un switch que devuelve el new Figura*
+        return new FiguraI();
+    }
+
+    const actualizarFiguras = () => {
+        FIGURAS.FIG_ACTUAL = generarFigura( FIGURAS.NXT_FIGURA || calcularFigura() );
+        FIGURAS.NXT_FIGURA = 'I';//calcularFigura();
+    };
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //                        La parte más larga, todas las figuras que extienden de la clase Figura..                        //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    const POSICIONES_INICIALES = {
+        T  : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11],
+        L2 : [],
+        N1 : [],
+        C  : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 10, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11],
+        L1 : [],
+        N2 : [],
+        I  : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA - 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2]
+    }
 
     extend(FiguraT, Figura);
     function FiguraT() {
@@ -86,17 +119,15 @@ const TETRIS = ( () => {
          *    0  1  2    1  2    2  1  3    2  1
          *       3       3                     3
          */
-        const INICIO = [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11];
         const REFERENCIA = this;
         let posicion = 0;
 
-        Figura.call(this, INICIO, 'purple');
+        Figura.call(this, POSICIONES_INICIALES.T, 'purple');
         window.addEventListener('keydown', moverFigura, false);
 
         let timerFiguraDescenso = setInterval( () => {
             if (comprobarColisionesDescendientes(this.bloques)) {
                 window.removeEventListener('keydown', moverFigura, false);
-                new Audio('SOUND/FX - Colision.mp3').play();
                 clearInterval(timerFiguraDescenso);
                 this.colisionDetectada = true;      
             } else {
@@ -336,16 +367,14 @@ const TETRIS = ( () => {
 
     extend(FiguraC, Figura);
     function FiguraC() {
-        const POS_INICIAL = [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 10, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11];
         const REFERENCIA = this;
 
-        Figura.call(this, POS_INICIAL, 'orange');
+        Figura.call(this, POSICIONES_INICIALES.C, 'orange');
         window.addEventListener('keydown', moverFigura, false);
 
         let timerFiguraDescenso = setInterval( () => {
             if (comprobarColisionesDescendientes(this.bloques)) {
                 window.removeEventListener('keydown', moverFigura, false);
-                new Audio('SOUND/FX - Colision.mp3').play();
                 clearInterval(timerFiguraDescenso);
                 this.colisionDetectada = true;
             } else {
@@ -431,17 +460,15 @@ const TETRIS = ( () => {
          *      0  1  2  3      2   
          *                      3
          */
-        const INICIO = [CONFIG.BLOQUE_GENERADOR_DE_PIEZA - 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2];
         const REFERENCIA = this;
         let posicion = 0;
 
-        Figura.call(this, INICIO, 'brown');
+        Figura.call(this, POSICIONES_INICIALES.I, 'brown');
         window.addEventListener('keydown', moverFigura, false);
 
         let timerFiguraDescenso = setInterval( () => {
             if (comprobarColisionesDescendientes(this.bloques)) {
                 window.removeEventListener('keydown', moverFigura, false);
-                new Audio('SOUND/FX - Colision.mp3').play();
                 clearInterval(timerFiguraDescenso);
                 this.colisionDetectada = true;      
             } else {
@@ -624,26 +651,28 @@ const TETRIS = ( () => {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //               Creamos una figura y un timer en el que iremos pintando el juego, comprobando colisiones..               //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+   
+    const FIGURAS = {
+        FIG_ACTUAL : generarFigura( calcularFigura() ),
+        NXT_FIGURA : 'I'//calcularFigura();
+    }
 
-    let figuraActual = generarFigura();
     let request;
-
     const performAnimation = () => {
         request = requestAnimationFrame(performAnimation);
-        canvasPantalla.mostrar(); // Update.
-        if (!detectarColisionBordeSuperior()) {
-            if (figuraActual.colisionDetectada) comprobarFilasRellenas();
-        } else cancelAnimationFrame(request);
+        if (FIGURAS.FIG_ACTUAL.colisionDetectada) {
+            new Audio('SOUND/FX - Colision.mp3').play();
+            comprobarSiHayFilasRellenas();
+            if (!comprobarSiSePuedeGenerarLaFigura(false)) actualizarFiguras();
+            else gameOver();
+        }
+        canvasPantalla.mostrar();
         pintarTablero();
     }
 
     requestAnimationFrame(performAnimation);
 
-    function detectarColisionBordeSuperior() {
-        return (figuraActual.colisionDetectada && tableroArray[CONFIG.BLOQUE_GENERADOR_DE_PIEZA].color != null) ? true : false;
-    }
-
-    function comprobarFilasRellenas() {
+    const comprobarSiHayFilasRellenas = () => {
         let lineasCompletadas = 0;
         let coincidencias = 0;
 
@@ -661,13 +690,12 @@ const TETRIS = ( () => {
 
         if (lineasCompletadas > 0 && lineasCompletadas < 4) new Audio('SOUND/FX - POOR LINE.mp3').play();
         else if(lineasCompletadas == 4) new Audio('SOUND/FX - GOOD LINE.mp3').play();
-        figuraActual = generarFigura();
+
     }
 
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// https://www.w3schools.com/graphics/game_sound.asp
-// https://www.youtube.com/watch?v=-FAzHyXZPm0
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    const gameOver = () => {
+        cancelAnimationFrame(request);
+        console.log('Perdiste');
+    }
 
 })();
