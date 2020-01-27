@@ -1,4 +1,6 @@
-const TETRIS = ( () => {
+document.addEventListener("DOMContentLoaded", () => TETRIS(), false);
+
+const TETRIS = () => {
 
     const CONFIG = {
         BLOQUE_GENERADOR_DE_PIEZA : 4,
@@ -119,6 +121,7 @@ const TETRIS = ( () => {
         let timerFiguraDescenso = setInterval( () => {
             if (comprobarColisionesDescendientes(this.bloques)) {
                 window.removeEventListener('keydown', moverFigura, false);
+                new Audio('SOUND/FX - Colision.mp3').play();
                 clearInterval(timerFiguraDescenso);
                 this.colisionDetectada = true;      
             } else {
@@ -366,6 +369,7 @@ const TETRIS = ( () => {
         let timerFiguraDescenso = setInterval( () => {
             if (comprobarColisionesDescendientes(this.bloques)) {
                 window.removeEventListener('keydown', moverFigura, false);
+                new Audio('SOUND/FX - Colision.mp3').play();
                 clearInterval(timerFiguraDescenso);
                 this.colisionDetectada = true;
             } else {
@@ -460,6 +464,7 @@ const TETRIS = ( () => {
         let timerFiguraDescenso = setInterval( () => {
             if (comprobarColisionesDescendientes(this.bloques)) {
                 window.removeEventListener('keydown', moverFigura, false);
+                new Audio('SOUND/FX - Colision.mp3').play();
                 clearInterval(timerFiguraDescenso);
                 this.colisionDetectada = true;      
             } else {
@@ -654,10 +659,8 @@ const TETRIS = ( () => {
         NIVEL : 0
     }
 
-    const añadirPiezaGeneradaAlMarcador = codigoFigura => { // Da null el querySelector...
-        PLAYER.PIEZAS_OBTENIDAS[codigoFigura] += 1;     
-        console.log("p[data-pieza = '" + codigoFigura + "']")
-        console.log(document.querySelector("p[data-pieza = '" + codigoFigura + "']").text)
+    const añadirPiezaGeneradaAlMarcador = codigoFigura => {
+        PLAYER.PIEZAS_OBTENIDAS[codigoFigura] += 1;
         document.querySelector("p[data-pieza = '" + codigoFigura + "']").innerText = PLAYER.PIEZAS_OBTENIDAS[codigoFigura].toString().padStart(3,'0');
     }
 
@@ -674,7 +677,6 @@ const TETRIS = ( () => {
     const performAnimation = () => {
         request = requestAnimationFrame(performAnimation);
         if (FIGURAS.FIG_ACTUAL.colisionDetectada) {
-            new Audio('SOUND/FX - Colision.mp3').play();
             comprobarSiHayFilasRellenas();
             if (!comprobarSiSePuedeGenerarLaFigura(false)) actualizarFiguras();
             else gameOver();
@@ -710,4 +712,4 @@ const TETRIS = ( () => {
         console.log('Perdiste');
     }
 
-})();
+};
