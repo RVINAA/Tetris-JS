@@ -1,6 +1,6 @@
 document.addEventListener("DOMContentLoaded", () => {
 
-    const BLOQUES = ['block-T', 'block-L2', 'block-N1', 'block-C', 'block-N2', 'block-L1', 'block-I'];
+    const BLOQUES = ['T', 'L2', 'N1', 'C', 'N2', 'L1', 'I'];
     const TRACKS = ['MUSIC - I', 'MUSIC - 2', 'MUSIC - 3', 'MUTED - X'];
 
     document.title = '⸺ ❌ 𝑻 𝑬 𝑻 𝑹 𝑰 𝑺 ❌ ⸺'
@@ -37,9 +37,9 @@ document.addEventListener("DOMContentLoaded", () => {
     BLOQUES.forEach( bloque => {
         let liPuntero = document.createElement('li');
         liPuntero.appendChild(document.createElement('img'));
-        liPuntero.firstElementChild.src = 'IMGs/piezas/' + bloque + '.png';
+        liPuntero.firstElementChild.src = 'IMGs/piezas/block-' + bloque + '.png';
         liPuntero.appendChild(document.createElement('p'));
-        liPuntero.children[1].className = bloque;
+        liPuntero.children[1].dataset.pieza = bloque;
         liPuntero.children[1].innerText = '000';
         puntero.children[2].children[1].appendChild(liPuntero);
     });

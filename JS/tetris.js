@@ -9,8 +9,7 @@ const TETRIS = ( () => {
         PIEZAS_EN_UNA_FILA : 10,
         DIMENSION_BLOQUE : 10,
         HEIGHT_CANVAS : 200,
-        WIDTH_CANVAS : 100,
-        VELOCIDAD : 500
+        WIDTH_CANVAS : 100
     };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -43,14 +42,14 @@ const TETRIS = ( () => {
     const pintarTablero = () => {
         tableroArray.forEach( casilla => {
             if (casilla.color != null) pintarBloque(casilla.color, casilla.x, casilla.y);
-            else pintarBloque('empty', casilla.x, casilla.y);
+            //else pintarBloque('empty', casilla.x, casilla.y);
         });
     }
 
     const pintarBloque = (color, x, y) => {
         const bloque = canvasPantalla.context;
         const imagen = new Image();
-        imagen.src = 'IMGs/casillas/' + color + '.png';
+        imagen.src = 'IMGs/casillas/0/' + color + '.png';
         bloque.fillStyle = color;
         bloque.drawImage(imagen, x, y, CONFIG.DIMENSION_BLOQUE, CONFIG.DIMENSION_BLOQUE);  
     }
@@ -81,7 +80,8 @@ const TETRIS = ( () => {
     const calcularFigura = () => Object.keys(POSICIONES_INICIALES)[Math.floor( (Math.random() * 7) )];
 
     const generarFigura = codigoDeFiguraAleatoria => { // Aquí un switch que devuelve el new Figura*
-        return new FiguraI();
+        añadirPiezaGeneradaAlMarcador('T');
+        return new FiguraT();
     }
 
     const actualizarFiguras = () => {
@@ -113,7 +113,7 @@ const TETRIS = ( () => {
         const REFERENCIA = this;
         let posicion = 0;
 
-        Figura.call(this, POSICIONES_INICIALES.T, 'purple');
+        Figura.call(this, POSICIONES_INICIALES.T, 'type1');
         window.addEventListener('keydown', moverFigura, false);
 
         let timerFiguraDescenso = setInterval( () => {
@@ -126,7 +126,7 @@ const TETRIS = ( () => {
                     return desplazarPiramideParaAbajo(bloque, index, this.color);
                 });
             }
-         }, CONFIG.VELOCIDAD );
+         }, PLAYER.VELOCIDAD );
 
         function moverFigura(evt) {
 
@@ -360,7 +360,7 @@ const TETRIS = ( () => {
     function FiguraC() {
         const REFERENCIA = this;
 
-        Figura.call(this, POSICIONES_INICIALES.C, 'orange');
+        Figura.call(this, POSICIONES_INICIALES.C, 'type0');
         window.addEventListener('keydown', moverFigura, false);
 
         let timerFiguraDescenso = setInterval( () => {
@@ -373,7 +373,7 @@ const TETRIS = ( () => {
                     return desplazarCuadradoParaAbajo(bloque, index, this.color);
                 });
             }
-         }, CONFIG.VELOCIDAD );
+         }, PLAYER.VELOCIDAD );
 
         function moverFigura(evt) {
             switch (evt.code) {
@@ -454,7 +454,7 @@ const TETRIS = ( () => {
         const REFERENCIA = this;
         let posicion = 0;
 
-        Figura.call(this, POSICIONES_INICIALES.I, 'brown');
+        Figura.call(this, POSICIONES_INICIALES.I, 'type0');
         window.addEventListener('keydown', moverFigura, false);
 
         let timerFiguraDescenso = setInterval( () => {
@@ -467,7 +467,7 @@ const TETRIS = ( () => {
                     return desplazarLineaParaAbajo(bloque, index, this.color);
                 });
             }
-         }, CONFIG.VELOCIDAD );
+         }, PLAYER.VELOCIDAD );
         
         function moverFigura(evt) {
 
@@ -637,6 +637,28 @@ const TETRIS = ( () => {
             }
             return bloque + CONFIG.PIEZAS_EN_UNA_FILA;
         }
+    }
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//         Todo lo relacionado al Jugador; niveles, puntuación, velocidad de la partida, colores de las fichas...         //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    const PLAYER = {
+        PIEZAS_OBTENIDAS : ( () => Object.keys(POSICIONES_INICIALES).reduce( (objeto, valor) => {
+            objeto[valor] = 0;
+            return objeto;
+        }, {} ))(),
+        PUNTUACION : '00000000',
+        VELOCIDAD : 500,
+        LINEAS : 0,
+        NIVEL : 0
+    }
+
+    const añadirPiezaGeneradaAlMarcador = codigoFigura => { // Da null el querySelector...
+        PLAYER.PIEZAS_OBTENIDAS[codigoFigura] += 1;     
+        console.log("p[data-pieza = '" + codigoFigura + "']")
+        console.log(document.querySelector("p[data-pieza = '" + codigoFigura + "']").text)
+        document.querySelector("p[data-pieza = '" + codigoFigura + "']").innerText = PLAYER.PIEZAS_OBTENIDAS[codigoFigura].toString().padStart(3,'0');
     }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
