@@ -4,11 +4,10 @@ const TETRIS = () => {
 
     const CONFIG = {
         BLOQUE_GENERADOR_DE_PIEZA : 4,
-        MARGEN_TABLERO_MAX_Y : 190,
+        MARGEN_TABLERO_MAX_Y : 210,
+        MARGEN_TABLERO_MIN_Y : -20,
         MARGEN_TABLERO_MAX_X : 90,
-        MARGEN_TABLERO_MIN_Y : 0,
         MARGEN_TABLERO_MIN_X : 0,
-        PIEZAS_EN_UNA_FILA : 10,
         DIMENSION_BLOQUE : 10,
         HEIGHT_CANVAS : 200,
         WIDTH_CANVAS : 100
@@ -28,676 +27,244 @@ const TETRIS = () => {
         }
     };
 
-    let contadorX = -10; let contadorY = 0;
-    let tableroArray = new Array( (CONFIG.HEIGHT_CANVAS / CONFIG.DIMENSION_BLOQUE) * (CONFIG.WIDTH_CANVAS / CONFIG.DIMENSION_BLOQUE) ).fill('.');
-    tableroArray = tableroArray.map( (casilla) => {
-        if (contadorX == CONFIG.MARGEN_TABLERO_MAX_X) { contadorY += CONFIG.DIMENSION_BLOQUE; contadorX = -(CONFIG.DIMENSION_BLOQUE); }
-        return new casillaTablero(contadorX += CONFIG.DIMENSION_BLOQUE, contadorY);
-    });
+    class Tablero {
+        static actualizarPuntuacion(valor) {
+            PLAYER.PUNTUACION += valor;
+            document.querySelector('.puntuacion').innerText = PLAYER.PUNTUACION.toString().padStart(8,'0');
+        }
 
-    function casillaTablero(x, y) {
-        this.color = null;
-        this.x = x;
-        this.y = y;
+        constructor() {
+            let contadorX = -10, contadorY = -20;
+            this.sectores = new Array( ( (CONFIG.HEIGHT_CANVAS + 20) / CONFIG.DIMENSION_BLOQUE) * (CONFIG.WIDTH_CANVAS / CONFIG.DIMENSION_BLOQUE) ).fill('.');
+            this.sectores = this.sectores.map( () => {
+                if (contadorX == CONFIG.MARGEN_TABLERO_MAX_X) contadorY += CONFIG.DIMENSION_BLOQUE, contadorX = -(CONFIG.DIMENSION_BLOQUE); 
+                return { color : null, x : contadorX += CONFIG.DIMENSION_BLOQUE, y : contadorY };
+            });
+        }
+
+        pintarTablero() {
+            this.sectores.forEach( casilla => {
+                if (casilla.color != null) this.pintarCasilla(casilla.color, casilla.x, casilla.y);
+                //else pintarBloque('empty', casilla.x, casilla.y);
+            });
+        }
+
+        pintarCasilla(color, x, y) {
+            const bloque = canvasPantalla.context;
+            const imagen = new Image();
+            imagen.src = 'IMGs/casillas/0/' + color + '.png';
+            bloque.fillStyle = color;
+            bloque.drawImage(imagen, x, y, CONFIG.DIMENSION_BLOQUE, CONFIG.DIMENSION_BLOQUE);  
+        };
     }
 
-    const pintarTablero = () => {
-        tableroArray.forEach( casilla => {
-            if (casilla.color != null) pintarBloque(casilla.color, casilla.x, casilla.y);
-            //else pintarBloque('empty', casilla.x, casilla.y);
-        });
-    }
-
-    const pintarBloque = (color, x, y) => {
-        const bloque = canvasPantalla.context;
-        const imagen = new Image();
-        imagen.src = 'IMGs/casillas/0/' + color + '.png';
-        bloque.fillStyle = color;
-        bloque.drawImage(imagen, x, y, CONFIG.DIMENSION_BLOQUE, CONFIG.DIMENSION_BLOQUE);  
-    }
+    let tablero = new Tablero();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //     Definimos la clase figura de la que heredan las otras figuras y una función que genera aleatoriamente figuras.     //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const extend = (Hijo, Padre) => {
-        Hijo.prototype = Object.create(Padre.prototype);
-        Hijo.prototype.constuctor = Hijo;
-    }
+    class Temporizador {
+        constructor(funcion) {
+            this.funcion = funcion;
+            this.initTimer();
+        }
 
-    function Figura(array, color) {
-        array.forEach( bloque => tableroArray[bloque].color = color );
-        this.colisionDetectada = false;
-        this.bloques = array;
-        this.color = color;
-    }
+        initTimer() {
+            this.timer = setInterval(this.funcion, PLAYER.VELOCIDAD);
+        }
 
-    const comprobarSiSePuedeGenerarLaFigura = celdaOcupada => {
-        POSICIONES_INICIALES[FIGURAS.NXT_FIGURA].forEach( casilla => { 
-            if (tableroArray[casilla].color != null) celdaOcupada = true; 
-        });
-        return celdaOcupada;
-    }
+        detenerTimer() {
+            clearInterval(this.timer);
+        }
 
-    const calcularFigura = () => Object.keys(POSICIONES_INICIALES)[Math.floor( (Math.random() * 7) )];
-
-    const generarFigura = codigoDeFiguraAleatoria => { // Aquí un switch que devuelve el new Figura*
-        añadirPiezaGeneradaAlMarcador('T');
-        return new FiguraT();
-    }
-
-    const actualizarFiguras = () => {
-        FIGURAS.FIG_ACTUAL = generarFigura(FIGURAS.NXT_FIGURA);
-        FIGURAS.NXT_FIGURA = calcularFigura();
+        switchStatus() {
+            if (document.hidden) this.detenerTimer();
+            else this.initTimer();
+        }
     };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//                        La parte más larga, todas las figuras que extienden de la clase Figura..                        //
+//     Definimos la clase figura de la que heredan las otras figuras y una función que genera aleatoriamente figuras.     //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const POSICIONES_INICIALES = {
-        T  : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11],
-        L2 : [],
-        N1 : [],
-        C  : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 10, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11],
-        L1 : [],
-        N2 : [],
-        I  : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA - 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2]
+/*
+  ->  ESTE COMMIT QUEDARÁ EN EL OLVIDO PERO MIL GRACIAS AL QUE HIZO ESTE FOR PARA GIRAR PIEZAS, EN NO MUCHO LO ADAPTARÉ <3
+  ->    O FRACASARÉ, QUIÉN SABE xD
+  rotate() {
+    const newCells = []
+    for (let i = 0; i < this.cells.length; i++) {
+      newCells[i] = []
+      for (let j = 0; j < this.cells.length; j++) {
+        newCells[i][j] = this.cells[this.cells.length - 1 - j][i]
+      }
     }
+    this.cells = newCells
+  }
 
-    extend(FiguraT, Figura);
-    function FiguraT() {
-        /*
-         *               0          0          0   
-         *    0  1  2    1  2    2  1  3    2  1
-         *       3       3                     3
-         */
-        const REFERENCIA = this;
-        let posicion = 0;
+*/
 
-        Figura.call(this, POSICIONES_INICIALES.T, 'type1');
-        window.addEventListener('keydown', moverFigura, false);
-
-        let timerFiguraDescenso = setInterval( () => {
-            if (comprobarColisionesDescendientes(this.bloques)) {
-                window.removeEventListener('keydown', moverFigura, false);
-                new Audio('SOUND/FX - Colision.mp3').play();
-                clearInterval(timerFiguraDescenso);
-                this.colisionDetectada = true;      
-            } else {
-                this.bloques = this.bloques.map( (bloque, index) => {
-                    return desplazarPiramideParaAbajo(bloque, index, this.color);
-                });
-            }
-         }, PLAYER.VELOCIDAD );
-
-        function moverFigura(evt) {
-
-            switch (evt.code) {
-                case 'ArrowLeft':
-                    if (comprobarColisionIzquierda(REFERENCIA.bloques)) {
-                        REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
-                            return desplazarPiramideParaLaIzquierda(bloque, index, REFERENCIA.color);
-                        });
-                        new Audio('SOUND/FX - Desplazar.mp3').play();
-                    }
-                    break;
-                case 'ArrowRight':
-                    if (comprobarColisionDerecha(REFERENCIA.bloques)) {
-                        REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
-                           return desplazarPiramideParaLaDerecha(bloque, index, REFERENCIA.color);
-                        });
-                        new Audio('SOUND/FX - Desplazar.mp3').play();
-                    }
-                    break;
-                case 'ArrowDown':
-                    if (!comprobarColisionesDescendientes(REFERENCIA.bloques)) {
-                        REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
-                            return desplazarPiramideParaAbajo(bloque, index, REFERENCIA.color);
-                        });
-                    }
-                    break;  
-                case 'ArrowUp':
-                    if (evt.repeat == true) return false;
-                    if (++posicion == 4) posicion = 0;
-                    if (comprobarColisionRotacionDisponible(REFERENCIA.bloques)) {
-                        REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
-                            return girarFigura(bloque, index, REFERENCIA.color);
-                        });
-                        new Audio('SOUND/FX - Spin.mp3').play();
-                    } else if (--posicion == -1) posicion = 3;
-                    break;
-            }
-        }
-
-        function girarFigura(bloque, index, color) {
-            switch(posicion) {
-                case 0:
-                    switch(index) {
-                        case 0:
-                            tableroArray[bloque].color = null;
-                            return bloque + 9;
-                        case 2:
-                            tableroArray[bloque + 2].color = color;
-                            return bloque + 2;
-                        default:
-                            return bloque;
-                    }
-                case 1:
-                    switch(index) {
-                        case 0:
-                            tableroArray[bloque].color = null;
-                            tableroArray[bloque - 9].color = color;
-                            return bloque - 9;
-                        default:
-                            return bloque;
-                    }
-                case 2:
-                    switch(index) {
-                        case 2:
-                            tableroArray[bloque - 2].color = color;
-                            return bloque - 2;
-                        case 3:
-                            tableroArray[bloque].color = null;
-                            return bloque - 9;
-                        default:
-                            return bloque;
-                    }
-                case 3:
-                    switch(index) {
-                        case 3:
-                            tableroArray[bloque].color = null;
-                            tableroArray[bloque + 9].color = color;
-                            return bloque + 9;
-                        default:
-                            return bloque;
-                    }
-            }
-        }
-
-        function comprobarColisionRotacionDisponible(bloques) {
-            switch(posicion) {
-                case 0:
-                    return tableroArray[bloques[1]].x < CONFIG.MARGEN_TABLERO_MAX_X && tableroArray[bloques[2] + 2].color == null;
-                case 1:
-                    return tableroArray[bloques[1]].y > CONFIG.MARGEN_TABLERO_MIN_Y && tableroArray[bloques[0] - 9].color == null;
-                case 2:
-                    return tableroArray[bloques[1]].x > CONFIG.MARGEN_TABLERO_MIN_X && tableroArray[bloques[2] - 2].color == null;
-                case 3:
-                    return tableroArray[bloques[1]].y < CONFIG.MARGEN_TABLERO_MAX_Y && tableroArray[bloques[3] + 9].color == null;
-            }
-        }
-
-        function comprobarColisionIzquierda(bloques) {
-            switch(posicion) {
-                case 0:
-                    return  tableroArray[bloques[0]].x > CONFIG.MARGEN_TABLERO_MIN_X && 
-                            tableroArray[bloques[0] - 1].color == null && 
-                            tableroArray[bloques[3] - 1].color == null; 
-                case 1:
-                    return  tableroArray[bloques[0]].x > CONFIG.MARGEN_TABLERO_MIN_X && 
-                            tableroArray[bloques[0] - 1].color == null &&
-                            tableroArray[bloques[1] - 1].color == null &&  
-                            tableroArray[bloques[3] - 1].color == null; 
-                case 2:
-                    return  tableroArray[bloques[2]].x > CONFIG.MARGEN_TABLERO_MIN_X && 
-                            tableroArray[bloques[0] - 1].color == null && 
-                            tableroArray[bloques[2] - 1].color == null; 
-                case 3:
-                    return  tableroArray[bloques[2]].x > CONFIG.MARGEN_TABLERO_MIN_X && 
-                            tableroArray[bloques[0] - 1].color == null &&
-                            tableroArray[bloques[2] - 1].color == null && 
-                            tableroArray[bloques[3] - 1].color == null; 
-            }
-        }
-
-        function comprobarColisionDerecha(bloques) {
-            switch(posicion) {
-                case 0:
-                    return  tableroArray[bloques[2]].x < CONFIG.MARGEN_TABLERO_MAX_X && 
-                            tableroArray[bloques[2] + 1].color == null && 
-                            tableroArray[bloques[3] + 1].color == null;
-                case 1:
-                    return  tableroArray[bloques[2]].x < CONFIG.MARGEN_TABLERO_MAX_X &&
-                            tableroArray[bloques[0] + 1].color == null &&
-                            tableroArray[bloques[2] + 1].color == null &&  
-                            tableroArray[bloques[3] + 1].color == null; 
-                case 2:
-                    return  tableroArray[bloques[3]].x < CONFIG.MARGEN_TABLERO_MAX_X && 
-                            tableroArray[bloques[0] + 1].color == null && 
-                            tableroArray[bloques[3] + 1].color == null; 
-                case 3:
-                    return  tableroArray[bloques[0]].x < CONFIG.MARGEN_TABLERO_MAX_X &&
-                            tableroArray[bloques[0] + 1].color == null &&
-                            tableroArray[bloques[1] + 1].color == null &&  
-                            tableroArray[bloques[3] + 1].color == null; 
-            }
-        }
-
-        function desplazarPiramideParaLaIzquierda(bloque, index, color) {
-            switch(posicion) {
-                case 0:
-                    if (index == 2 || index == 3) tableroArray[bloque].color = null;
-                    if (index == 0 || index == 3) tableroArray[bloque - 1].color = color;
-                    return bloque - 1;
-                case 1:
-                    if (index != 1) tableroArray[bloque].color = null;
-                    if (index != 2) tableroArray[bloque - 1].color = color;
-                    return bloque - 1;
-                case 2:
-                    if (index == 0 || index == 3) tableroArray[bloque].color = null;
-                    if (index == 0 || index == 2) tableroArray[bloque - 1].color = color;
-                    return bloque - 1;
-                case 3:
-                    if (index != 2) tableroArray[bloque].color = null;
-                    if (index != 1) tableroArray[bloque - 1].color = color;
-                    return bloque - 1;
-            }
-        }
-
-        function desplazarPiramideParaLaDerecha(bloque, index, color) {
-            switch(posicion) {
-                case 0:
-                    if (index == 0 || index == 3) tableroArray[bloque].color = null;
-                    if (index == 2 || index == 3) tableroArray[bloque + 1].color = color;
-                    return bloque + 1;
-                case 1:
-                    if (index != 2) tableroArray[bloque].color = null;
-                    if (index != 1) tableroArray[bloque + 1].color = color;
-                    return bloque + 1;
-                case 2:
-                    if (index == 0 || index == 2) tableroArray[bloque].color = null;
-                    if (index == 0 || index == 3) tableroArray[bloque + 1].color = color;
-                    return bloque + 1;
-                case 3:
-                    if (index != 1) tableroArray[bloque].color = null;
-                    if (index != 2) tableroArray[bloque + 1].color = color;
-                    return bloque + 1;
-            }
-        }
-
-        function comprobarColisionesDescendientes(bloques) {
-            switch(posicion) {
-                case 0:
-                    return  tableroArray[bloques[3]].y == CONFIG.MARGEN_TABLERO_MAX_Y || 
-                            tableroArray[bloques[0] + CONFIG.PIEZAS_EN_UNA_FILA].color != null ||
-                            tableroArray[bloques[2] + CONFIG.PIEZAS_EN_UNA_FILA].color != null || 
-                            tableroArray[bloques[3] + CONFIG.PIEZAS_EN_UNA_FILA].color != null;
-                case 1:
-                    return  tableroArray[bloques[3]].y == CONFIG.MARGEN_TABLERO_MAX_Y ||
-                            tableroArray[bloques[2] + CONFIG.PIEZAS_EN_UNA_FILA].color != null || 
-                            tableroArray[bloques[3] + CONFIG.PIEZAS_EN_UNA_FILA].color != null;
-                case 2:
-                    return  tableroArray[bloques[1]].y == CONFIG.MARGEN_TABLERO_MAX_Y || 
-                            tableroArray[bloques[1] + CONFIG.PIEZAS_EN_UNA_FILA].color != null || 
-                            tableroArray[bloques[2] + CONFIG.PIEZAS_EN_UNA_FILA].color != null || 
-                            tableroArray[bloques[3] + CONFIG.PIEZAS_EN_UNA_FILA].color != null;
-                case 3:
-                    return  tableroArray[bloques[3]].y == CONFIG.MARGEN_TABLERO_MAX_Y ||
-                            tableroArray[bloques[2] + CONFIG.PIEZAS_EN_UNA_FILA].color != null || 
-                            tableroArray[bloques[3] + CONFIG.PIEZAS_EN_UNA_FILA].color != null;
-            }
-        }
-
-        function desplazarPiramideParaAbajo(bloque, index, color) {
-            switch(posicion) {
-                case 0:
-                    if (index != 1) tableroArray[bloque + CONFIG.PIEZAS_EN_UNA_FILA].color = color;
-                    if (index != 3) tableroArray[bloque].color = null;
-                    break;
-                case 1:
-                case 3:
-                    if (index != 0 && index != 1) tableroArray[bloque + CONFIG.PIEZAS_EN_UNA_FILA].color = color;
-                    if (index != 1 && index != 3) tableroArray[bloque].color = null;
-                    break;
-                case 2:
-                    if (index != 0) tableroArray[bloque + CONFIG.PIEZAS_EN_UNA_FILA].color = color;
-                    if (index != 1) tableroArray[bloque].color = null;
-                    break;
-            }
-            return bloque + CONFIG.PIEZAS_EN_UNA_FILA;
-        }
-    }
-
-    extend(FiguraC, Figura);
-    function FiguraC() {
-        const REFERENCIA = this;
-
-        Figura.call(this, POSICIONES_INICIALES.C, 'type0');
-        window.addEventListener('keydown', moverFigura, false);
-
-        let timerFiguraDescenso = setInterval( () => {
-            if (comprobarColisionesDescendientes(this.bloques)) {
-                window.removeEventListener('keydown', moverFigura, false);
-                new Audio('SOUND/FX - Colision.mp3').play();
-                clearInterval(timerFiguraDescenso);
-                this.colisionDetectada = true;
-            } else {
-                this.bloques = this.bloques.map( (bloque, index) => {
-                    return desplazarCuadradoParaAbajo(bloque, index, this.color);
-                });
-            }
-         }, PLAYER.VELOCIDAD );
-
-        function moverFigura(evt) {
-            switch (evt.code) {
-                case 'ArrowLeft':
-                    if (comprobarColisionIzquierda(REFERENCIA.bloques)) {
-                        REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
-                            return desplazarCuadradoParaLaIzquierda(bloque, index, REFERENCIA.color);
-                        });
-                        new Audio('SOUND/FX - Desplazar.mp3').play();
-                    }
-                    break;
-                case 'ArrowRight':
-                    if (comprobarColisionDerecha(REFERENCIA.bloques)) {
-                        REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
-                            return desplazarCuadradoParaLaDerecha(bloque, index, REFERENCIA.color);
-                        });
-                        new Audio('SOUND/FX - Desplazar.mp3').play();
-                    }
-                    break;
-                case 'ArrowDown':
-                    if (!comprobarColisionesDescendientes(REFERENCIA.bloques)) {
-                        REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
-                            return desplazarCuadradoParaAbajo(bloque, index, REFERENCIA.color);
-                        });
-                    }
-                    break;
-                case 'ArrowUp':
-                    if (evt.repeat == true) return false;
-                    new Audio('SOUND/FX - Spin.mp3').play();
-                    break;
-            }
-        }
-
-        function comprobarColisionIzquierda(bloques) {
-            return  tableroArray[bloques[0]].x > CONFIG.MARGEN_TABLERO_MIN_X && 
-                    tableroArray[bloques[2]].x > CONFIG.MARGEN_TABLERO_MIN_X && 
-                    tableroArray[bloques[0] - 1].color == null && 
-                    tableroArray[bloques[2] - 1].color == null;
-        }
-
-        function comprobarColisionDerecha(bloques) {
-            return  tableroArray[bloques[1]].x < CONFIG.MARGEN_TABLERO_MAX_X && 
-                    tableroArray[bloques[3]].x < CONFIG.MARGEN_TABLERO_MAX_X && 
-                    tableroArray[bloques[1] + 1].color == null && 
-                    tableroArray[bloques[3] + 1].color == null;
-        }
-
-        function desplazarCuadradoParaLaIzquierda(bloque, index, color) {
-            (index == 1 || index == 3) ? tableroArray[bloque].color = null : tableroArray[bloque - 1].color = color;
-            return bloque - 1;
-        }
-
-        function desplazarCuadradoParaLaDerecha(bloque, index, color) {
-            (index == 0 || index == 2) ? tableroArray[bloque].color = null : tableroArray[bloque + 1].color = color;
-            return bloque + 1;
-        }
-
-        function comprobarColisionesDescendientes(bloques) {
-            return  tableroArray[bloques[3]].y == CONFIG.MARGEN_TABLERO_MAX_Y || 
-                    tableroArray[bloques[2] + CONFIG.PIEZAS_EN_UNA_FILA].color != null || 
-                    tableroArray[bloques[3] + CONFIG.PIEZAS_EN_UNA_FILA].color != null;
-        }
-
-        function desplazarCuadradoParaAbajo(bloque, index, color) {
-            (index == 0 || index == 1) ? tableroArray[bloque].color = null : tableroArray[bloque + CONFIG.PIEZAS_EN_UNA_FILA].color = color;
-            return bloque + CONFIG.PIEZAS_EN_UNA_FILA;
-        }
-    }
+    const FIGURAS_DISPONIBLES = [
+        { nombre : 'T', color : 'type0', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11] },
+        { nombre : 'J', color : 'type1', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 12] },
+        { nombre : 'Z', color : 'type2', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 12] },
+        { nombre : 'C', color : 'type0', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 10, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11] },
+        { nombre : 'S', color : 'type1', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 10, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11] },
+        { nombre : 'L', color : 'type2', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 10] },
+        { nombre : 'I', color : 'type0', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 9, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 10, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 12] }
+    ];
     
-    extend(FiguraI, Figura);
-    function FiguraI() {
-        /* 
-         *                      0
-         *                      1
-         *      0  1  2  3      2   
-         *                      3
-         */
-        const REFERENCIA = this;
-        let posicion = 0;
+    class Figura {
+        static comprobarColisionSuperior = () => {
+            let celdaOcupada = false;
+            FIGURAS.NXT_FIGURA.inicio.forEach( casilla => { 
+                if (tablero.sectores[casilla].color != null) celdaOcupada = true; 
+            });
+            return celdaOcupada;
+        }
 
-        Figura.call(this, POSICIONES_INICIALES.I, 'type0');
-        window.addEventListener('keydown', moverFigura, false);
-
-        let timerFiguraDescenso = setInterval( () => {
-            if (comprobarColisionesDescendientes(this.bloques)) {
-                window.removeEventListener('keydown', moverFigura, false);
-                new Audio('SOUND/FX - Colision.mp3').play();
-                clearInterval(timerFiguraDescenso);
-                this.colisionDetectada = true;      
-            } else {
-                this.bloques = this.bloques.map( (bloque, index) => {
-                    return desplazarLineaParaAbajo(bloque, index, this.color);
-                });
-            }
-         }, PLAYER.VELOCIDAD );
+        static calcularFigura = () => FIGURAS_DISPONIBLES[ Math.floor( (Math.random() * 7) ) ];
         
-        function moverFigura(evt) {
+        static generarFigura = objFigura => {
+            this.actualizarContadorFiguras(objFigura);
+            return new Figura(objFigura);
+        }
+        
+        static actualizarContadorFiguras(objFigura) {
+            const contadorFigura = PLAYER.PIEZAS_OBTENIDAS[objFigura.nombre] += 1;
+            document.querySelector("p[data-pieza = '" + objFigura.nombre + "']").innerText = contadorFigura.toString().padStart(3,'0');
+        }
 
-            switch (evt.code) {
-                case 'ArrowLeft':
-                    if (comprobarColisionIzquierda(REFERENCIA.bloques)) {
-                        REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
-                            return desplazarLineaParaLaIzquierda(bloque, index, REFERENCIA.color);
-                        });
-                        new Audio('SOUND/FX - Desplazar.mp3').play();
-                    }
-                    break;
-                case 'ArrowRight':
-                    if (comprobarColisionDerecha(REFERENCIA.bloques)) {
-                        REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
-                           return desplazarLineaParaLaDerecha(bloque, index, REFERENCIA.color);
-                        });
-                        new Audio('SOUND/FX - Desplazar.mp3').play();
-                    }
-                    break;
+        static actualizarFiguras = () => {
+            FIGURAS.FIG_ACTUAL = this.generarFigura(FIGURAS.NXT_FIGURA);
+            FIGURAS.NXT_FIGURA = this.calcularFigura();
+        }
+
+        //////////////////////////////////////////////////////////////
+
+        constructor(objFigura) {
+            objFigura.inicio.forEach( bloque => tablero.sectores[bloque].color = objFigura.color );
+            this.bloques = objFigura.inicio;
+            this.color = objFigura.color;
+            console.log(objFigura)
+            window.addEventListener('keydown', this.moverFigura, false);
+
+            let timer = new Temporizador( () => {
+                if (!this.comprobarColisiones('ArrowDown')) this.desplazar('ArrowDown');     
+                else {
+                    window.removeEventListener('visibilitychange', switchStatus, false);
+                    window.removeEventListener('keydown', this.moverFigura, false);
+                    new Audio('SOUND/FX - Colision.mp3').play();
+                    comprobarSiHayFilasRellenas();
+                    timer.detenerTimer();
+
+                    if (Figura.comprobarColisionSuperior()) gameOver();
+                    else Figura.actualizarFiguras();
+                }
+            });
+            
+            const switchStatus = () => timer.switchStatus();
+            window.addEventListener('visibilitychange', switchStatus, false);
+        };
+
+        moverFigura(evt) {
+            switch(evt.code) {
                 case 'ArrowDown':
-                    if (!comprobarColisionesDescendientes(REFERENCIA.bloques)) {
-                        REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
-                            return desplazarLineaParaAbajo(bloque, index, REFERENCIA.color);
-                        });
-                    }
-                    break;  
+                    if (!FIGURAS.FIG_ACTUAL.comprobarColisiones(evt.code)) Tablero.actualizarPuntuacion(1);
+                case 'ArrowLeft':
+                case 'ArrowRight':
+                    FIGURAS.FIG_ACTUAL.desplazar(evt.code);
+                    break;
                 case 'ArrowUp':
-                    if (evt.repeat == true) return false;
-                    if (++posicion == 2) posicion = 0;
-                    if (comprobarColisionRotacionDisponible(REFERENCIA.bloques)) {
-                        REFERENCIA.bloques = REFERENCIA.bloques.map( (bloque, index) => {
-                            return girarFigura(bloque, index, REFERENCIA.color);
-                        });
-                        new Audio('SOUND/FX - Spin.mp3').play();
-                    } else if (--posicion == -1) posicion = 1;
+                    FIGURAS.FIG_ACTUAL.girar();
                     break;
             }
         }
-        
-        function girarFigura(bloque, index, color) {
-            switch(posicion) {
-                case 0:
-                    switch(index) {
-                        case 0:
-                            tableroArray[bloque].color = null;
-                            tableroArray[bloque + 18].color = color;
-                            return bloque + 18;
-                        case 1:
-                            tableroArray[bloque].color = null;
-                            tableroArray[bloque + 9].color = color;
-                            return bloque + 9;
-                        case 3:
-                            tableroArray[bloque].color = null;
-                            tableroArray[bloque - 9].color = color;
-                            return bloque - 9;
-                        default:
-                            return bloque;
-                    }
-                case 1:
-                    switch(index) {
-                        case 0:
-                            tableroArray[bloque].color = null;
-                            tableroArray[bloque - 18].color = color;
-                            return bloque - 18;
-                        case 1:
-                            tableroArray[bloque].color = null;
-                            tableroArray[bloque - 9].color = color;
-                            return bloque - 9;
-                        case 3:
-                            tableroArray[bloque].color = null;
-                            tableroArray[bloque + 9].color = color;
-                            return bloque + 9;
-                        default:
-                            return bloque;
-                    }
+
+        desplazar(direccion) {
+            if (!this.comprobarColisiones(direccion)) {
+                let cantidadADesplazar;
+                switch(direccion) {
+                    case 'ArrowLeft': cantidadADesplazar = -1; break;
+                    case 'ArrowRight': cantidadADesplazar = 1; break;
+                    case 'ArrowDown': cantidadADesplazar = 10; break;
+                }
+                this.bloques.forEach( bloque => tablero.sectores[bloque].color = null );
+                this.bloques = this.bloques.map( bloque => bloque + cantidadADesplazar);
+                this.bloques.forEach( bloque => tablero.sectores[bloque].color = this.color );
             }
         }
 
-        function comprobarColisionRotacionDisponible(bloques) {
-            switch(posicion) {
-                case 0:
-                    return tableroArray[bloques[2]].x > (CONFIG.MARGEN_TABLERO_MIN_X + 10) && tableroArray[bloques[2]].x < CONFIG.MARGEN_TABLERO_MAX_X && tableroArray[bloques[0] + 18].color == null && tableroArray[bloques[1] + 9].color == null && tableroArray[bloques[3] - 9].color == null;
-                case 1:
-                    return tableroArray[bloques[2]].y > (CONFIG.MARGEN_TABLERO_MIN_Y + 10) && tableroArray[bloques[2]].y < (CONFIG.MARGEN_TABLERO_MAX_Y) && tableroArray[bloques[0] - 18].color == null && tableroArray[bloques[1] - 9].color == null && tableroArray[bloques[3] + 9].color == null;
+        comprobarColisiones(direccion) {
+            switch(direccion) {
+                case 'ArrowLeft':
+                    return this.colision(CONFIG.MARGEN_TABLERO_MIN_X, -1);
+                case 'ArrowRight':
+                    return this.colision(CONFIG.MARGEN_TABLERO_MAX_X, 1);
+                case 'ArrowDown':
+                    return this.colision(CONFIG.MARGEN_TABLERO_MAX_Y, 10);
             }
         }
 
-        function comprobarColisionIzquierda(bloques) {
-            switch(posicion) {
-                case 0:
-                    return  tableroArray[bloques[0]].x > CONFIG.MARGEN_TABLERO_MIN_X && 
-                            tableroArray[bloques[0] - 1].color == null;
-                case 1:
-                    return  tableroArray[bloques[0]].x > CONFIG.MARGEN_TABLERO_MIN_X && 
-                            tableroArray[bloques[0] - 1].color == null &&
-                            tableroArray[bloques[1] - 1].color == null &&
-                            tableroArray[bloques[2] - 1].color == null &&
-                            tableroArray[bloques[3] - 1].color == null;
-            }
+        colision(bordeExterior, bloqueAMirar) {
+            let colision = false;
+            this.bloques.forEach( bloque => {
+                if (tablero.sectores[bloque].x == bordeExterior) colision = true;
+                if (this.bloques.indexOf(bloque + bloqueAMirar) == -1) {
+                    if (typeof tablero.sectores[bloque + bloqueAMirar] == 'undefined' || tablero.sectores[bloque + bloqueAMirar].color != null) colision = true;
+                } 
+            });
+            return colision;
         }
 
-        function comprobarColisionDerecha(bloques) {
-            switch(posicion) {
-                case 0:
-                    return  tableroArray[bloques[3]].x < CONFIG.MARGEN_TABLERO_MAX_X &&
-                            tableroArray[bloques[3] + 1].color == null;
-                case 1:
-                    return  tableroArray[bloques[2]].x < CONFIG.MARGEN_TABLERO_MAX_X &&
-                            tableroArray[bloques[0] + 1].color == null &&
-                            tableroArray[bloques[1] + 1].color == null &&
-                            tableroArray[bloques[2] + 1].color == null &&
-                            tableroArray[bloques[3] + 1].color == null;
-            }
-        }
+        girar() {
 
-        function desplazarLineaParaLaIzquierda(bloque, index, color) {
-            switch(posicion) {
-                case 0:
-                    if (index == 0) tableroArray[bloque - 1].color = color;
-                    if (index == 3) tableroArray[bloque].color = null;
-                    return bloque - 1;
-                case 1:
-                    tableroArray[bloque].color = null;
-                    tableroArray[bloque - 1].color = color;
-                    return bloque - 1;
-            }
         }
-
-        function desplazarLineaParaLaDerecha(bloque, index, color) {
-            switch(posicion) {
-                case 0:
-                    if (index == 0) tableroArray[bloque].color = null;
-                    if (index == 3) tableroArray[bloque + 1].color = color;
-                    return bloque + 1;
-                case 1:
-                    tableroArray[bloque].color = null;
-                    tableroArray[bloque + 1].color = color;
-                    return bloque + 1;
-            }
-        }
-
-        function comprobarColisionesDescendientes(bloques) {
-            switch(posicion) {
-                case 0:
-                    return  tableroArray[bloques[2]].y == CONFIG.MARGEN_TABLERO_MAX_Y ||
-                            tableroArray[bloques[0] + CONFIG.PIEZAS_EN_UNA_FILA].color != null |
-                            tableroArray[bloques[1] + CONFIG.PIEZAS_EN_UNA_FILA].color != null ||
-                            tableroArray[bloques[2] + CONFIG.PIEZAS_EN_UNA_FILA].color != null ||
-                            tableroArray[bloques[3] + CONFIG.PIEZAS_EN_UNA_FILA].color != null;
-                case 1:
-                    return  tableroArray[bloques[3]].y == CONFIG.MARGEN_TABLERO_MAX_Y ||
-                            tableroArray[bloques[3] + CONFIG.PIEZAS_EN_UNA_FILA].color != null;
-            }
-        }
-
-        function desplazarLineaParaAbajo(bloque, index, color) {
-            switch(posicion) {
-                case 0:
-                    tableroArray[bloque].color = null;
-                    tableroArray[bloque + CONFIG.PIEZAS_EN_UNA_FILA].color = color;
-                    break;
-                case 1:
-                    if (index == 0) tableroArray[bloque].color = null;
-                    if (index == 3)  tableroArray[bloque + CONFIG.PIEZAS_EN_UNA_FILA].color = color;
-                    break;
-            }
-            return bloque + CONFIG.PIEZAS_EN_UNA_FILA;
-        }
-    }
+    };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //         Todo lo relacionado al Jugador; niveles, puntuación, velocidad de la partida, colores de las fichas...         //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const PLAYER = {
-        PIEZAS_OBTENIDAS : ( () => Object.keys(POSICIONES_INICIALES).reduce( (objeto, valor) => {
-            objeto[valor] = 0;
+        PIEZAS_OBTENIDAS : ( () => FIGURAS_DISPONIBLES.reduce( (objeto, valor) => {
+            objeto[valor.nombre] = 0;
             return objeto;
         }, {} ))(),
-        PUNTUACION : '00000000',
         VELOCIDAD : 500,
+        PUNTUACION : 0,
         LINEAS : 0,
         NIVEL : 0
-    }
+    };
 
-    const añadirPiezaGeneradaAlMarcador = codigoFigura => {
-        PLAYER.PIEZAS_OBTENIDAS[codigoFigura] += 1;
-        document.querySelector("p[data-pieza = '" + codigoFigura + "']").innerText = PLAYER.PIEZAS_OBTENIDAS[codigoFigura].toString().padStart(3,'0');
-    }
+    const FIGURAS = {
+        FIG_ACTUAL : Figura.generarFigura(Figura.calcularFigura()),
+        NXT_FIGURA : Figura.calcularFigura()
+    };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //               Creamos una figura y un timer en el que iremos pintando el juego, comprobando colisiones..               //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-   
-    const FIGURAS = {
-        FIG_ACTUAL : generarFigura( calcularFigura() ),
-        NXT_FIGURA : calcularFigura()
-    }
 
     let request;
     const performAnimation = () => {
         request = requestAnimationFrame(performAnimation);
-        if (FIGURAS.FIG_ACTUAL.colisionDetectada) {
-            comprobarSiHayFilasRellenas();
-            if (!comprobarSiSePuedeGenerarLaFigura(false)) actualizarFiguras();
-            else gameOver();
-        }
         canvasPantalla.mostrar();
-        pintarTablero();
-    }
+        tablero.pintarTablero();
+    };
 
     requestAnimationFrame(performAnimation);
 
     const comprobarSiHayFilasRellenas = () => {
-        let lineasCompletadas = 0;
-        let coincidencias = 0;
+        let lineasCompletadas = 0, coincidencias = 0;
 
-        tableroArray.forEach( (casilla, index) => {
+        tablero.sectores.forEach( (casilla, index) => {
             if (index != 0 && index % 10 == 0) coincidencias = 0;
             if (casilla.color != null) ++coincidencias;
-            if (coincidencias == CONFIG.PIEZAS_EN_UNA_FILA) {
-                Object.keys(tableroArray.slice(0, index + 1)).reverse().map( currentIndex => {
-                    if (currentIndex >= CONFIG.PIEZAS_EN_UNA_FILA) tableroArray[currentIndex].color = tableroArray[currentIndex - CONFIG.PIEZAS_EN_UNA_FILA].color;
-                    else tableroArray[currentIndex].color = null;
+            if (coincidencias == 10) {
+                Object.keys(tablero.sectores.slice(0, index + 1)).reverse().map( currentIndex => {
+                    if (currentIndex >= 10) tablero.sectores[currentIndex].color = tablero.sectores[currentIndex - 10].color;
+                    else tablero.sectores[currentIndex].color = null;
                 });
                 ++lineasCompletadas;
             }
@@ -710,6 +277,6 @@ const TETRIS = () => {
     const gameOver = () => {
         cancelAnimationFrame(request);
         console.log('Perdiste');
-    }
+    };
 
 };
