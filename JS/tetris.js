@@ -270,8 +270,14 @@ const TETRIS = () => {
             }
         });
 
-        if (lineasCompletadas > 0 && lineasCompletadas < 4) new Audio('SOUND/FX - POOR LINE.mp3').play();
-        else if(lineasCompletadas == 4) new Audio('SOUND/FX - GOOD LINE.mp3').play();
+        if (lineasCompletadas > 0 && lineasCompletadas < 4) {
+            new Audio('SOUND/FX - POOR LINE.mp3').play();
+            Tablero.actualizarPuntuacion(40);
+        }
+        else if(lineasCompletadas == 4) {
+            new Audio('SOUND/FX - GOOD LINE.mp3').play();
+            Tablero.actualizarPuntuacion(1200);
+        }
     }
 
     const gameOver = () => {
