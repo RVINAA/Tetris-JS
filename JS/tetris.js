@@ -3,14 +3,14 @@ document.addEventListener("DOMContentLoaded", () => TETRIS(), false);
 const TETRIS = () => {
 
     const CONFIG = {
-        BLOQUE_GENERADOR_DE_PIEZA : 4,
         MARGEN_TABLERO_MAX_Y : 210,
         MARGEN_TABLERO_MIN_Y : -20,
         MARGEN_TABLERO_MAX_X : 90,
         MARGEN_TABLERO_MIN_X : 0,
         DIMENSION_BLOQUE : 10,
         HEIGHT_CANVAS : 200,
-        WIDTH_CANVAS : 100
+        WIDTH_CANVAS : 100,
+        SPAWN_BLOCK : 4
     };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -122,13 +122,13 @@ const TETRIS = () => {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const FIGURAS_DISPONIBLES = [
-        { nombre : 'T', color : 'type0', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2], posiciones : [[-9, 0, -11, 9], [11, 0, -9, -11], [9, 0, 11, -9], [-11, 0, 9, 11]] },
-        { nombre : 'J', color : 'type1', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 12], posiciones : [[2, 11, 20, 9], [20, 9, -2, -11], [-2, -11, -20, -9], [-20, -9, 2, 11]] },
-        { nombre : 'Z', color : 'type2', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 12], posiciones : [[2, 0, 11, 9], [20, 0, 9 , -11], [-2, 0, -11, -9], [-20, 0, -9, 11]] },
-        { nombre : 'C', color : 'type0', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 10, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11], posiciones : [[1, 10, -10, -1], [10, -1, 1, -10], [-1, -10, 10, 1], [-10, 1, -1, 10]] },
-        { nombre : 'S', color : 'type1', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 10], posiciones : [[11, 0, 20, -9], [9, 0, -2, 11], [-11, 0, -20, 9], [-9, 0, 2, -11]] },
-        { nombre : 'L', color : 'type2', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 10], posiciones: [[2, 11, 20, -9], [20, 9, -2, 11], [-2, -11, -20, 9], [-20, -9, 2, -11]] },
-        { nombre : 'I', color : 'type0', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 9, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 10, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 12], posiciones : [[-8, 1, 10, 19], [21, 10, -1, -12], [8, -1, -10, -19], [-21, -10, 1, 12]] }
+        { nombre : 'T', color : 'type0', inicio : [CONFIG.SPAWN_BLOCK, CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 11, CONFIG.SPAWN_BLOCK + 2], posiciones : [[-9, 0, -11, 9], [11, 0, -9, -11], [9, 0, 11, -9], [-11, 0, 9, 11]] },
+        { nombre : 'J', color : 'type1', inicio : [CONFIG.SPAWN_BLOCK, CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 2, CONFIG.SPAWN_BLOCK + 12], posiciones : [[2, 11, 20, 9], [20, 9, -2, -11], [-2, -11, -20, -9], [-20, -9, 2, 11]] },
+        { nombre : 'Z', color : 'type2', inicio : [CONFIG.SPAWN_BLOCK, CONFIG.SPAWN_BLOCK + 11, CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 12], posiciones : [[2, 0, 11, 9], [20, 0, 9 , -11], [-2, 0, -11, -9], [-20, 0, -9, 11]] },
+        { nombre : 'C', color : 'type0', inicio : [CONFIG.SPAWN_BLOCK, CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 10, CONFIG.SPAWN_BLOCK + 11], posiciones : [[1, 10, -10, -1], [10, -1, 1, -10], [-1, -10, 10, 1], [-10, 1, -1, 10]] },
+        { nombre : 'S', color : 'type1', inicio : [CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 11, CONFIG.SPAWN_BLOCK + 2, CONFIG.SPAWN_BLOCK + 10], posiciones : [[11, 0, 20, -9], [9, 0, -2, 11], [-11, 0, -20, 9], [-9, 0, 2, -11]] },
+        { nombre : 'L', color : 'type2', inicio : [CONFIG.SPAWN_BLOCK, CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 2, CONFIG.SPAWN_BLOCK + 10], posiciones: [[2, 11, 20, -9], [20, 9, -2, 11], [-2, -11, -20, 9], [-20, -9, 2, -11]] },
+        { nombre : 'I', color : 'type0', inicio : [CONFIG.SPAWN_BLOCK + 9, CONFIG.SPAWN_BLOCK + 10, CONFIG.SPAWN_BLOCK + 11, CONFIG.SPAWN_BLOCK + 12], posiciones : [[-8, 1, 10, 19], [21, 10, -1, -12], [8, -1, -10, -19], [-21, -10, 1, 12]] }
     ];
     
     class Figura {
