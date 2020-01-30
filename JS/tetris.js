@@ -29,12 +29,11 @@ const TETRIS = () => {
 
     class Tablero {
         static actualizarPuntuacion(valor) {
-            PLAYER.PUNTUACION += valor;
-            document.querySelector('.puntuacion').innerText = PLAYER.PUNTUACION.toString().padStart(8,'0');
+            document.querySelector('.puntuacion').innerText = (PLAYER.PUNTUACION += valor).toString().padStart(8,'0');
         }
 
-        static actualizarLineas(valor) { // Arreglar, ya que si de 9 pasa a 10 por ejemplo no suma xd
-            if ((PLAYER.LINEAS += valor) % 10 == 0) Tablero.actualizarNivel();
+        static actualizarLineas(valor) {
+            if ((PLAYER.LINEAS += valor).toString().slice(0, PLAYER.LINEAS.toString().length - 1) > PLAYER.NIVEL) Tablero.actualizarNivel();
             document.querySelector('.lineas').innerText = 'LINES - ' + PLAYER.LINEAS.toString().padStart(3,'0');
         }
 
@@ -61,7 +60,7 @@ const TETRIS = () => {
         pintarCasilla(color, x, y) {
             const bloque = canvasPantalla.context;
             const imagen = new Image();
-            imagen.src = 'IMGs/casillas/0/' + color + '.png';
+            imagen.src = 'IMGs/casillas/' + PLAYER.NIVEL + '/' + color + '.png';
             bloque.drawImage(imagen, x, y, CONFIG.DIMENSION_BLOQUE, CONFIG.DIMENSION_BLOQUE);  
         }
 
