@@ -33,6 +33,16 @@ const TETRIS = () => {
             document.querySelector('.puntuacion').innerText = PLAYER.PUNTUACION.toString().padStart(8,'0');
         }
 
+        static actualizarLineas(valor) { // Arreglar, ya que si de 9 pasa a 10 por ejemplo no suma xd
+            if ((PLAYER.LINEAS += valor) % 10 == 0) Tablero.actualizarNivel();
+            document.querySelector('.lineas').innerText = 'LINES - ' + PLAYER.LINEAS.toString().padStart(3,'0');
+        }
+
+        static actualizarNivel() {
+            document.querySelector('.nivel').innerText = 'LEVEL: ' + (++PLAYER.NIVEL), PLAYER.VELOCIDAD -= 10;
+            new Audio('SOUND/FX - Level UP.mp3').play();
+        }
+
         constructor() {
             let contadorX = -10, contadorY = -20;
             this.sectores = new Array( ( (CONFIG.HEIGHT_CANVAS + 20) / CONFIG.DIMENSION_BLOQUE) * (CONFIG.WIDTH_CANVAS / CONFIG.DIMENSION_BLOQUE) ).fill('.');
@@ -45,7 +55,6 @@ const TETRIS = () => {
         pintarTablero() {
             this.sectores.forEach( casilla => {
                 if (casilla.color != null) this.pintarCasilla(casilla.color, casilla.x, casilla.y);
-                //else pintarBloque('empty', casilla.x, casilla.y);
             });
         }
 
@@ -53,9 +62,33 @@ const TETRIS = () => {
             const bloque = canvasPantalla.context;
             const imagen = new Image();
             imagen.src = 'IMGs/casillas/0/' + color + '.png';
-            bloque.fillStyle = color;
             bloque.drawImage(imagen, x, y, CONFIG.DIMENSION_BLOQUE, CONFIG.DIMENSION_BLOQUE);  
-        };
+        }
+
+        comprobarSiHayFilasRellenas() {
+            let lineasCompletadas = 0, coincidencias = 0;
+    
+            this.sectores.forEach( (casilla, index) => {
+                if (index != 0 && index % 10 == 0) coincidencias = 0;
+                if (casilla.color != null) ++coincidencias;
+                if (coincidencias == 10) {
+                    Object.keys(this.sectores.slice(0, index + 1)).reverse().map( currentIndex => {
+                        if (currentIndex >= 10) this.sectores[currentIndex].color = this.sectores[currentIndex - 10].color;
+                        else this.sectores[currentIndex].color = null;
+                    });
+                    ++lineasCompletadas;
+                }
+            });
+
+            if (lineasCompletadas > 0) Tablero.actualizarLineas(lineasCompletadas);
+            if (lineasCompletadas > 0 && lineasCompletadas < 4) {
+                new Audio('SOUND/FX - POOR LINE.mp3').play();
+                Tablero.actualizarPuntuacion( [40, 100, 300][lineasCompletadas - 1] );
+            } else if (lineasCompletadas == 4) {
+                new Audio('SOUND/FX - GOOD LINE.mp3').play();
+                Tablero.actualizarPuntuacion(1200);
+            }
+        }
     }
 
     let tablero = new Tablero();
@@ -88,30 +121,14 @@ const TETRIS = () => {
 //     Definimos la clase figura de la que heredan las otras figuras y una función que genera aleatoriamente figuras.     //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-/*
-  ->  ESTE COMMIT QUEDARÁ EN EL OLVIDO PERO MIL GRACIAS AL QUE HIZO ESTE FOR PARA GIRAR PIEZAS, EN NO MUCHO LO ADAPTARÉ <3
-  ->    O FRACASARÉ, QUIÉN SABE xD
-  rotate() {
-    const newCells = []
-    for (let i = 0; i < this.cells.length; i++) {
-      newCells[i] = []
-      for (let j = 0; j < this.cells.length; j++) {
-        newCells[i][j] = this.cells[this.cells.length - 1 - j][i]
-      }
-    }
-    this.cells = newCells
-  }
-
-*/
-
     const FIGURAS_DISPONIBLES = [
-        { nombre : 'T', color : 'type0', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11] },
-        { nombre : 'J', color : 'type1', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 12] },
-        { nombre : 'Z', color : 'type2', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 12] },
-        { nombre : 'C', color : 'type0', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 10, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11] },
-        { nombre : 'S', color : 'type1', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 10, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11] },
-        { nombre : 'L', color : 'type2', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 10] },
-        { nombre : 'I', color : 'type0', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 9, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 10, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 12] }
+        { nombre : 'T', color : 'type0', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2], posiciones : [[-9, 0, -11, 9], [11, 0, -9, -11], [9, 0, 11, -9], [-11, 0, 9, 11]] },
+        { nombre : 'J', color : 'type1', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 12], posiciones : [[2, 11, 20, 9], [20, 9, -2, -11], [-2, -11, -20, -9], [-20, -9, 2, 11]] },
+        { nombre : 'Z', color : 'type2', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 12], posiciones : [[2, 0, 11, 9], [20, 0, 9 , -11], [-2, 0, -11, -9], [-20, 0, -9, 11]] },
+        { nombre : 'C', color : 'type0', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 10, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11], posiciones : [[1, 10, -10, -1], [10, -1, 1, -10], [-1, -10, 10, 1], [-10, 1, -1, 10]] },
+        { nombre : 'S', color : 'type1', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 10], posiciones : [[11, 0, 20, -9], [9, 0, -2, 11], [-11, 0, -20, 9], [-9, 0, 2, -11]] },
+        { nombre : 'L', color : 'type2', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 1, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 2, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 10], posiciones: [[2, 11, 20, -9], [20, 9, -2, 11], [-2, -11, -20, 9], [-20, -9, 2, -11]] },
+        { nombre : 'I', color : 'type0', inicio : [CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 9, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 10, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 11, CONFIG.BLOQUE_GENERADOR_DE_PIEZA + 12], posiciones : [[-8, 1, 10, 19], [21, 10, -1, -12], [8, -1, -10, -19], [-21, -10, 1, 12]] }
     ];
     
     class Figura {
@@ -144,9 +161,12 @@ const TETRIS = () => {
 
         constructor(objFigura) {
             objFigura.inicio.forEach( bloque => tablero.sectores[bloque].color = objFigura.color );
+            this.posiciones = objFigura.posiciones;
             this.bloques = objFigura.inicio;
+            this.nombre = objFigura.nombre;
             this.color = objFigura.color;
-            console.log(objFigura)
+            this.pos = 0;
+
             window.addEventListener('keydown', this.moverFigura, false);
 
             let timer = new Temporizador( () => {
@@ -155,7 +175,7 @@ const TETRIS = () => {
                     window.removeEventListener('visibilitychange', switchStatus, false);
                     window.removeEventListener('keydown', this.moverFigura, false);
                     new Audio('SOUND/FX - Colision.mp3').play();
-                    comprobarSiHayFilasRellenas();
+                    tablero.comprobarSiHayFilasRellenas();
                     timer.detenerTimer();
 
                     if (Figura.comprobarColisionSuperior()) gameOver();
@@ -165,7 +185,7 @@ const TETRIS = () => {
             
             const switchStatus = () => timer.switchStatus();
             window.addEventListener('visibilitychange', switchStatus, false);
-        };
+        }
 
         moverFigura(evt) {
             switch(evt.code) {
@@ -218,6 +238,16 @@ const TETRIS = () => {
         }
 
         girar() {
+            if (!this.comprobarGiro(this.posiciones[this.pos])) {
+                this.bloques.forEach( bloque => tablero.sectores[bloque].color = null );
+                this.bloques = this.bloques.map( (bloque, index) => bloque + this.posiciones[this.pos][index]);
+                this.bloques.forEach( bloque => tablero.sectores[bloque].color = this.color );
+                new Audio('SOUND/FX - Spin.mp3').play();
+                if (++this.pos > 3) this.pos = 0;
+            }
+        }
+
+        comprobarGiro(array) {
 
         }
     };
@@ -255,32 +285,7 @@ const TETRIS = () => {
 
     requestAnimationFrame(performAnimation);
 
-    const comprobarSiHayFilasRellenas = () => {
-        let lineasCompletadas = 0, coincidencias = 0;
-
-        tablero.sectores.forEach( (casilla, index) => {
-            if (index != 0 && index % 10 == 0) coincidencias = 0;
-            if (casilla.color != null) ++coincidencias;
-            if (coincidencias == 10) {
-                Object.keys(tablero.sectores.slice(0, index + 1)).reverse().map( currentIndex => {
-                    if (currentIndex >= 10) tablero.sectores[currentIndex].color = tablero.sectores[currentIndex - 10].color;
-                    else tablero.sectores[currentIndex].color = null;
-                });
-                ++lineasCompletadas;
-            }
-        });
-
-        if (lineasCompletadas > 0 && lineasCompletadas < 4) {
-            new Audio('SOUND/FX - POOR LINE.mp3').play();
-            Tablero.actualizarPuntuacion(40);
-        }
-        else if(lineasCompletadas == 4) {
-            new Audio('SOUND/FX - GOOD LINE.mp3').play();
-            Tablero.actualizarPuntuacion(1200);
-        }
-    }
-
-    const gameOver = () => {
+    const gameOver = () => {console.log(PLAYER.VELOCIDAD)
         cancelAnimationFrame(request);
         console.log('Perdiste');
     };
