@@ -28,16 +28,16 @@ const TETRIS = () => {
     };
 
     class Tablero {
-        static actualizarPuntuacion(valor) {
+        static actualizarPuntuacion = valor => {
             document.querySelector('.puntuacion').innerText = (PLAYER.PUNTUACION += valor).toString().padStart(8,'0');
         }
 
-        static actualizarLineas(valor) {
+        static actualizarLineas = valor => {
             if ((PLAYER.LINEAS += valor).toString().slice(0, PLAYER.LINEAS.toString().length - 1) > PLAYER.NIVEL) Tablero.actualizarNivel();
             document.querySelector('.lineas').innerText = 'LINES - ' + PLAYER.LINEAS.toString().padStart(3,'0');
         }
 
-        static actualizarNivel() {
+        static actualizarNivel = () => {
             document.querySelector('.nivel').innerText = 'LEVEL: ' + (++PLAYER.NIVEL), PLAYER.VELOCIDAD -= 10;
             new Audio('SOUND/FX - Level UP.mp3').play();
         }
@@ -51,20 +51,20 @@ const TETRIS = () => {
             });
         }
 
-        pintarTablero() {
+        pintarTablero = () => {
             this.sectores.forEach( casilla => {
                 if (casilla.color != null) this.pintarCasilla(casilla.color, casilla.x, casilla.y);
             });
         }
 
-        pintarCasilla(color, x, y) {
+        pintarCasilla = (color, x, y) => {
             const bloque = canvasPantalla.context;
             const imagen = new Image();
             imagen.src = 'IMGs/casillas/' + PLAYER.NIVEL + '/' + color + '.png';
             bloque.drawImage(imagen, x, y, CONFIG.DIMENSION_BLOQUE, CONFIG.DIMENSION_BLOQUE);  
         }
 
-        comprobarSiHayFilasRellenas() {
+        comprobarSiHayFilasRellenas = () => {
             let lineasCompletadas = 0, coincidencias = 0;
     
             this.sectores.forEach( (casilla, index) => {
@@ -80,6 +80,7 @@ const TETRIS = () => {
             });
 
             if (lineasCompletadas > 0) Tablero.actualizarLineas(lineasCompletadas);
+            else new Audio('SOUND/FX - Colision.mp3').play();
             if (lineasCompletadas > 0 && lineasCompletadas < 4) {
                 new Audio('SOUND/FX - POOR LINE.mp3').play();
                 Tablero.actualizarPuntuacion( [40, 100, 300][lineasCompletadas - 1] );
@@ -99,20 +100,20 @@ const TETRIS = () => {
     class Temporizador {
         constructor(funcion) {
             this.funcion = funcion;
-            this.initTimer();
+            this.iniciarTimer();
         }
 
-        initTimer() {
-            this.timer = setInterval(this.funcion, PLAYER.VELOCIDAD);
-        }
+        iniciarTimer = () => { this.timer = setInterval(this.funcion, PLAYER.VELOCIDAD); }
 
-        detenerTimer() {
-            clearInterval(this.timer);
-        }
+        detenerTimer = () => { clearInterval(this.timer); }
 
-        switchStatus() {
+        switchStatus = () => {
             if (document.hidden) this.detenerTimer();
-            else this.initTimer();
+            else this.iniciarTimer();
+        }
+
+        pausarJuego = () => {
+
         }
     };
 
@@ -146,7 +147,7 @@ const TETRIS = () => {
             return new Figura(objFigura);
         }
         
-        static actualizarContadorFiguras(objFigura) {
+        static actualizarContadorFiguras = objFigura => {
             const contadorFigura = PLAYER.PIEZAS_OBTENIDAS[objFigura.nombre] += 1;
             document.querySelector("p[data-pieza = '" + objFigura.nombre + "']").innerText = contadorFigura.toString().padStart(3,'0');
         }
@@ -173,7 +174,6 @@ const TETRIS = () => {
                 else {
                     window.removeEventListener('visibilitychange', switchStatus, false);
                     window.removeEventListener('keydown', this.moverFigura, false);
-                    new Audio('SOUND/FX - Colision.mp3').play();
                     tablero.comprobarSiHayFilasRellenas();
                     timer.detenerTimer();
 
@@ -186,21 +186,24 @@ const TETRIS = () => {
             window.addEventListener('visibilitychange', switchStatus, false);
         }
 
-        moverFigura(evt) {
+        moverFigura = evt => {
             switch(evt.code) {
                 case 'ArrowDown':
-                    if (!FIGURAS.FIG_ACTUAL.comprobarColisiones(evt.code)) Tablero.actualizarPuntuacion(1);
+                    if (!FIGURAS.FIG_ACTUAL.comprobarColisiones('ArrowDown')) Tablero.actualizarPuntuacion(1); 
                 case 'ArrowLeft':
                 case 'ArrowRight':
                     FIGURAS.FIG_ACTUAL.desplazar(evt.code);
                     break;
                 case 'ArrowUp':
-                    FIGURAS.FIG_ACTUAL.girar();
+                    if (evt.repeat != true) FIGURAS.FIG_ACTUAL.girar();
+                    break;
+                case 'Space':
+                    FIGURAS.FIG_ACTUAL.drop();
                     break;
             }
         }
 
-        desplazar(direccion) {
+        desplazar = direccion => {
             if (!this.comprobarColisiones(direccion)) {
                 let cantidadADesplazar;
                 switch(direccion) {
@@ -214,7 +217,7 @@ const TETRIS = () => {
             }
         }
 
-        comprobarColisiones(direccion) {
+        comprobarColisiones = direccion => {
             switch(direccion) {
                 case 'ArrowLeft':
                     return this.colision(CONFIG.MARGEN_TABLERO_MIN_X, -1);
@@ -225,7 +228,7 @@ const TETRIS = () => {
             }
         }
 
-        colision(bordeExterior, bloqueAMirar) {
+        colision = (bordeExterior, bloqueAMirar) => {
             let colision = false;
             this.bloques.forEach( bloque => {
                 if (tablero.sectores[bloque].x == bordeExterior) colision = true;
@@ -236,7 +239,7 @@ const TETRIS = () => {
             return colision;
         }
 
-        girar() {
+        girar = () => {
             if (!this.comprobarGiro(this.posiciones[this.pos])) {
                 this.bloques.forEach( bloque => tablero.sectores[bloque].color = null );
                 this.bloques = this.bloques.map( (bloque, index) => bloque + this.posiciones[this.pos][index]);
@@ -246,9 +249,11 @@ const TETRIS = () => {
             }
         }
 
-        comprobarGiro(array) {
+        comprobarGiro = array => {
 
         }
+
+        drop = () => { while (!this.comprobarColisiones('ArrowDown')) this.desplazar('ArrowDown'), Tablero.actualizarPuntuacion(1); }
     };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -284,9 +289,8 @@ const TETRIS = () => {
 
     requestAnimationFrame(performAnimation);
 
-    const gameOver = () => {console.log(PLAYER.VELOCIDAD)
+    const gameOver = () => {
         cancelAnimationFrame(request);
         console.log('Perdiste');
     };
-
 };
