@@ -121,11 +121,11 @@ const TETRIS = () => {
 //     Definimos la clase figura de la que heredan las otras figuras y una función que genera aleatoriamente figuras.     //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const FIGURAS_DISPONIBLES = [
+    const FIGURAS_DISPONIBLES = [ // Rehacer la L y J, y pensar lo de girar sentido de rotación o acortar el de S Z y I
         { nombre : 'T', color : 'type0', inicio : [CONFIG.SPAWN_BLOCK, CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 11, CONFIG.SPAWN_BLOCK + 2], posiciones : [[-9, 0, -11, 9], [11, 0, -9, -11], [9, 0, 11, -9], [-11, 0, 9, 11]] },
         { nombre : 'J', color : 'type1', inicio : [CONFIG.SPAWN_BLOCK, CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 2, CONFIG.SPAWN_BLOCK + 12], posiciones : [[2, 11, 20, 9], [20, 9, -2, -11], [-2, -11, -20, -9], [-20, -9, 2, 11]] },
         { nombre : 'Z', color : 'type2', inicio : [CONFIG.SPAWN_BLOCK, CONFIG.SPAWN_BLOCK + 11, CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 12], posiciones : [[2, 0, 11, 9], [20, 0, 9 , -11], [-2, 0, -11, -9], [-20, 0, -9, 11]] },
-        { nombre : 'C', color : 'type0', inicio : [CONFIG.SPAWN_BLOCK, CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 10, CONFIG.SPAWN_BLOCK + 11], posiciones : [[1, 10, -10, -1], [10, -1, 1, -10], [-1, -10, 10, 1], [-10, 1, -1, 10]] },
+        { nombre : 'C', color : 'type0', inicio : [CONFIG.SPAWN_BLOCK, CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 10, CONFIG.SPAWN_BLOCK + 11], posiciones : [[0, 0, 0, 0]] },
         { nombre : 'S', color : 'type1', inicio : [CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 11, CONFIG.SPAWN_BLOCK + 2, CONFIG.SPAWN_BLOCK + 10], posiciones : [[11, 0, 20, -9], [9, 0, -2, 11], [-11, 0, -20, 9], [-9, 0, 2, -11]] },
         { nombre : 'L', color : 'type2', inicio : [CONFIG.SPAWN_BLOCK, CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 2, CONFIG.SPAWN_BLOCK + 10], posiciones: [[2, 11, 20, -9], [20, 9, -2, 11], [-2, -11, -20, 9], [-20, -9, 2, -11]] },
         { nombre : 'I', color : 'type0', inicio : [CONFIG.SPAWN_BLOCK + 9, CONFIG.SPAWN_BLOCK + 10, CONFIG.SPAWN_BLOCK + 11, CONFIG.SPAWN_BLOCK + 12], posiciones : [[-8, 1, 10, 19], [21, 10, -1, -12], [8, -1, -10, -19], [-21, -10, 1, 12]] }
@@ -245,7 +245,7 @@ const TETRIS = () => {
                 this.bloques = this.bloques.map( (bloque, index) => bloque + this.posiciones[this.pos][index]);
                 this.bloques.forEach( bloque => tablero.sectores[bloque].color = this.color );
                 new Audio('SOUND/FX - Spin.mp3').play();
-                if (++this.pos > 3) this.pos = 0;
+                if (++this.pos > this.posiciones.length - 1) this.pos = 0;
             }
         }
 
