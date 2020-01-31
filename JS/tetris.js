@@ -100,6 +100,7 @@ const TETRIS = () => {
     class Temporizador {
         constructor(funcion) {
             this.funcion = funcion;
+            this.pausado = false;
             this.iniciarTimer();
         }
 
@@ -108,12 +109,8 @@ const TETRIS = () => {
         detenerTimer = () => { clearInterval(this.timer); }
 
         switchStatus = () => {
-            if (document.hidden) this.detenerTimer();
-            else this.iniciarTimer();
-        }
-
-        pausarJuego = () => {
-
+            if (document.hidden || !this.pausado) this.detenerTimer(), this.pausado = true;
+            else this.iniciarTimer(), this.pausado = false;
         }
     };
 
@@ -169,20 +166,20 @@ const TETRIS = () => {
 
             window.addEventListener('keydown', this.moverFigura, false);
 
-            let timer = new Temporizador( () => {
+            this.timer = new Temporizador( () => {
                 if (!this.comprobarColisiones('ArrowDown')) this.desplazar('ArrowDown');     
                 else {
                     window.removeEventListener('visibilitychange', switchStatus, false);
                     window.removeEventListener('keydown', this.moverFigura, false);
                     tablero.comprobarSiHayFilasRellenas();
-                    timer.detenerTimer();
+                    this.timer.switchStatus();
 
                     if (Figura.comprobarColisionSuperior()) gameOver();
                     else Figura.actualizarFiguras();
                 }
             });
             
-            const switchStatus = () => timer.switchStatus();
+            const switchStatus = () => this.timer.switchStatus();
             window.addEventListener('visibilitychange', switchStatus, false);
         }
 
@@ -200,6 +197,8 @@ const TETRIS = () => {
                 case 'Space':
                     FIGURAS.FIG_ACTUAL.drop();
                     break;
+                case 'Enter':
+                    FIGURAS.FIG_ACTUAL.timer.switchStatus();
             }
         }
 
