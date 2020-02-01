@@ -27,7 +27,7 @@ const TETRIS = () => {
         }
     };
 
-    class Tablero {
+    class Tablero { // Ver si hay que capar las scores.
         static actualizarPuntuacion = valor => {
             document.querySelector('.puntuacion').innerText = (PLAYER.PUNTUACION += valor).toString().padStart(8,'0');
         }
@@ -60,7 +60,7 @@ const TETRIS = () => {
         pintarCasilla = (color, x, y) => {
             const bloque = canvasPantalla.context;
             const imagen = new Image();
-            imagen.src = 'IMGs/casillas/' + PLAYER.NIVEL + '/' + color + '.png';
+            imagen.src = 'IMGs/casillas/' + PLAYER.NIVEL.toString().slice(PLAYER.NIVEL.toString().length - 1) + '/' + color + '.png';
             bloque.drawImage(imagen, x, y, CONFIG.DIMENSION_BLOQUE, CONFIG.DIMENSION_BLOQUE);  
         }
 
