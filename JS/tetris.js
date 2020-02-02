@@ -27,13 +27,12 @@ const TETRIS = () => {
         }
     };
 
-    class Tablero { // Ver si hay que capar las scores.
+    class Tablero {
         static actualizarPuntuacion = valor => {
             document.querySelector('.puntuacion').innerText = (PLAYER.PUNTUACION += valor).toString().padStart(8,'0');
         }
 
-        static actualizarLineas = valor => {
-            if ((PLAYER.LINEAS += valor).toString().slice(0, PLAYER.LINEAS.toString().length - 1) > PLAYER.NIVEL) Tablero.actualizarNivel();
+        static actualizarLineas = () => {
             document.querySelector('.lineas').innerText = 'LINES - ' + PLAYER.LINEAS.toString().padStart(3,'0');
         }
 
@@ -66,7 +65,6 @@ const TETRIS = () => {
 
         comprobarSiHayFilasRellenas = () => {
             let lineasCompletadas = 0, coincidencias = 0;
-    
             this.sectores.forEach( (casilla, index) => {
                 if (index != 0 && index % 10 == 0) coincidencias = 0;
                 if (casilla.color != null) ++coincidencias;
@@ -76,11 +74,13 @@ const TETRIS = () => {
                         else this.sectores[currentIndex].color = null;
                     });
                     ++lineasCompletadas;
+                    if ((++PLAYER.LINEAS) % 10 == 0) Tablero.actualizarNivel();
                 }
             });
 
-            if (lineasCompletadas > 0) Tablero.actualizarLineas(lineasCompletadas);
-            else new Audio('SOUND/FX - Colision.mp3').play();
+            if (lineasCompletadas == 0) new Audio('SOUND/FX - Colision.mp3').play();
+            else Tablero.actualizarLineas();
+
             if (lineasCompletadas > 0 && lineasCompletadas < 4) {
                 new Audio('SOUND/FX - POOR LINE.mp3').play();
                 Tablero.actualizarPuntuacion( [40, 100, 300][lineasCompletadas - 1] );
@@ -108,9 +108,14 @@ const TETRIS = () => {
 
         detenerTimer = () => { clearInterval(this.timer); }
 
+        pausarJuego = () => {
+            if (this.pausado) this.iniciarTimer(), this.pausado = false;
+            else this.detenerTimer(), this.pausado = true;
+        }
+
         switchStatus = () => {
-            if (document.hidden || !this.pausado) this.detenerTimer(), this.pausado = true;
-            else this.iniciarTimer(), this.pausado = false;
+            if (document.hidden && !this.pausado) this.detenerTimer();
+            else if (!this.pausado) this.iniciarTimer();
         }
     };
 
@@ -118,13 +123,13 @@ const TETRIS = () => {
 //     Definimos la clase figura de la que heredan las otras figuras y una función que genera aleatoriamente figuras.     //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    const FIGURAS_DISPONIBLES = [ // Rehacer la L y J, y pensar lo de girar sentido de rotación o acortar el de S Z y I
+    const FIGURAS_DISPONIBLES = [
         { nombre : 'T', color : 'type0', inicio : [CONFIG.SPAWN_BLOCK, CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 11, CONFIG.SPAWN_BLOCK + 2], posiciones : [[-9, 0, -11, 9], [11, 0, -9, -11], [9, 0, 11, -9], [-11, 0, 9, 11]] },
-        { nombre : 'J', color : 'type1', inicio : [CONFIG.SPAWN_BLOCK, CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 2, CONFIG.SPAWN_BLOCK + 12], posiciones : [[2, 11, 20, 9], [20, 9, -2, -11], [-2, -11, -20, -9], [-20, -9, 2, 11]] },
+        { nombre : 'J', color : 'type1', inicio : [CONFIG.SPAWN_BLOCK, CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 2, CONFIG.SPAWN_BLOCK + 12], posiciones : [[-9, 0, 9, -2], [11, 0, -11, -20], [9, 0, -9, 2], [-11, 0, 11, 20]] },
         { nombre : 'Z', color : 'type2', inicio : [CONFIG.SPAWN_BLOCK, CONFIG.SPAWN_BLOCK + 11, CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 12], posiciones : [[2, 0, 11, 9], [20, 0, 9 , -11], [-2, 0, -11, -9], [-20, 0, -9, 11]] },
         { nombre : 'C', color : 'type0', inicio : [CONFIG.SPAWN_BLOCK, CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 10, CONFIG.SPAWN_BLOCK + 11], posiciones : [[0, 0, 0, 0]] },
         { nombre : 'S', color : 'type1', inicio : [CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 11, CONFIG.SPAWN_BLOCK + 2, CONFIG.SPAWN_BLOCK + 10], posiciones : [[11, 0, 20, -9], [9, 0, -2, 11], [-11, 0, -20, 9], [-9, 0, 2, -11]] },
-        { nombre : 'L', color : 'type2', inicio : [CONFIG.SPAWN_BLOCK, CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 2, CONFIG.SPAWN_BLOCK + 10], posiciones: [[2, 11, 20, -9], [20, 9, -2, 11], [-2, -11, -20, 9], [-20, -9, 2, -11]] },
+        { nombre : 'L', color : 'type2', inicio : [CONFIG.SPAWN_BLOCK, CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 2, CONFIG.SPAWN_BLOCK + 10], posiciones: [[-9, 0, 9, -20], [11, 0, -11, 2], [9, 0, -9, 20], [-11, 0, 11, -2]] },
         { nombre : 'I', color : 'type0', inicio : [CONFIG.SPAWN_BLOCK + 9, CONFIG.SPAWN_BLOCK + 10, CONFIG.SPAWN_BLOCK + 11, CONFIG.SPAWN_BLOCK + 12], posiciones : [[-8, 1, 10, 19], [21, 10, -1, -12], [8, -1, -10, -19], [-21, -10, 1, 12]] }
     ];
     
@@ -172,7 +177,7 @@ const TETRIS = () => {
                     window.removeEventListener('visibilitychange', switchStatus, false);
                     window.removeEventListener('keydown', this.moverFigura, false);
                     tablero.comprobarSiHayFilasRellenas();
-                    this.timer.switchStatus();
+                    this.timer.detenerTimer();
 
                     if (Figura.comprobarColisionSuperior()) gameOver();
                     else Figura.actualizarFiguras();
@@ -191,14 +196,15 @@ const TETRIS = () => {
                 case 'ArrowRight':
                     FIGURAS.FIG_ACTUAL.desplazar(evt.code);
                     break;
+                case 'Enter':
+                    if (evt.repeat != true) FIGURAS.FIG_ACTUAL.timer.pausarJuego();
+                    break;
                 case 'ArrowUp':
                     if (evt.repeat != true) FIGURAS.FIG_ACTUAL.girar();
                     break;
                 case 'Space':
-                    FIGURAS.FIG_ACTUAL.drop();
+                    if (evt.repeat != true) FIGURAS.FIG_ACTUAL.drop();
                     break;
-                case 'Enter':
-                    FIGURAS.FIG_ACTUAL.timer.switchStatus();
             }
         }
 
