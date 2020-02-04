@@ -181,3 +181,19 @@ body, html {
 .musica > a:hover:not(.activo)::after {
     content: ' ◄';
 }
+
+.pausa {
+    background-color: rgba(0, 0, 0, 0.5);
+    position: absolute;
+    display: none;
+    height: 200px;
+    width: 100px;
+}
+
+.pausa > p {
+    top: 0; left: 0; right: 0; bottom: 0;
+    width: 75px; height: 16px;
+    font-size: 13px;
+    position: absolute;
+    margin: auto;
+}

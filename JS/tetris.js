@@ -99,6 +99,7 @@ const TETRIS = () => {
 
     class Temporizador {
         constructor(funcion) {
+            window.addEventListener('keydown', this.pausarJuego, false);
             this.funcion = funcion;
             this.pausado = false;
             this.iniciarTimer();
@@ -108,9 +109,18 @@ const TETRIS = () => {
 
         detenerTimer = () => { clearInterval(this.timer); }
 
-        pausarJuego = () => {
-            if (this.pausado) this.iniciarTimer(), this.pausado = false;
-            else this.detenerTimer(), this.pausado = true;
+        pausarJuego = evt => {
+            if (evt.code == 'Enter' && !evt.repeat) {console.log('a')
+                if (this.pausado) {
+                    window.addEventListener('keydown', FIGURAS.FIG_ACTUAL.moverFigura, false);
+                    this.iniciarTimer(), musica.switchStatus(), this.pausado = false;
+                    document.querySelector('.pausa').removeAttribute('style');
+                } else {
+                    window.removeEventListener('keydown', FIGURAS.FIG_ACTUAL.moverFigura, false);
+                    this.detenerTimer(), musica.switchStatus(), this.pausado = true;
+                    document.querySelector('.pausa').style.display = "block";
+                }
+            }
         }
 
         switchStatus = () => {
@@ -161,7 +171,7 @@ const TETRIS = () => {
 
         //////////////////////////////////////////////////////////////
 
-        constructor(objFigura) {
+        constructor(objFigura) {console.log(objFigura)
             objFigura.inicio.forEach( bloque => tablero.sectores[bloque].color = objFigura.color );
             this.posiciones = objFigura.posiciones;
             this.bloques = objFigura.inicio;
@@ -174,6 +184,7 @@ const TETRIS = () => {
             this.timer = new Temporizador( () => {
                 if (!this.comprobarColisiones('ArrowDown')) this.desplazar('ArrowDown');     
                 else {
+                    window.removeEventListener('keydown', this.timer.pausarJuego, false);
                     window.removeEventListener('visibilitychange', switchStatus, false);
                     window.removeEventListener('keydown', this.moverFigura, false);
                     tablero.comprobarSiHayFilasRellenas();
@@ -195,9 +206,6 @@ const TETRIS = () => {
                 case 'ArrowLeft':
                 case 'ArrowRight':
                     FIGURAS.FIG_ACTUAL.desplazar(evt.code);
-                    break;
-                case 'Enter':
-                    if (evt.repeat != true) FIGURAS.FIG_ACTUAL.timer.pausarJuego();
                     break;
                 case 'ArrowUp':
                     if (evt.repeat != true) FIGURAS.FIG_ACTUAL.girar();

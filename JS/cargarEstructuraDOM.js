@@ -1,3 +1,23 @@
+class Gramola {
+    constructor() {
+        this.soundTrack = new Audio();
+        this.soundTrack.volume = 0.4;
+        this.soundTrack.loop = true;
+    }
+
+    ponerCancion = cancion => {
+        this.soundTrack.src = 'SOUND/' + cancion + '.mp3';
+        this.soundTrack.play();
+    }
+
+    switchStatus = () => {
+        if (this.soundTrack.src != false && !this.soundTrack.paused) this.soundTrack.pause();
+        else if (this.soundTrack.src != false && this.soundTrack.paused) this.soundTrack.play();
+    }
+}
+
+let musica = new Gramola();
+
 document.addEventListener("DOMContentLoaded", () => {
     
     const TRACKLIST = ['MUSIC - I', 'MUSIC - 2', 'MUSIC - 3', 'MUTED - X'];
@@ -46,6 +66,13 @@ document.addEventListener("DOMContentLoaded", () => {
     puntero.children[3].className = 'tablero';
     document.body.appendChild(puntero); // #Tetris.
 
+    // Pantalla de pausa -> .pauseScreen
+    puntero.appendChild(document.createElement('div'));
+    puntero.children[4].className = 'pausa';
+    puntero.children[4].appendChild(document.createElement('p'));
+    puntero.children[4].firstElementChild.innerText = 'PAUSE';
+    puntero.children[3].appendChild(puntero.children[4]);
+
     // Contenedor -> .adicional
     puntero = document.createElement('div');
     puntero.className = 'adicional';
@@ -62,15 +89,6 @@ document.addEventListener("DOMContentLoaded", () => {
     puntero.children[1].firstElementChild.innerText = 'NEXT';
 
     // Contenedor -> .music
-    const nuevoTrack = () => {
-        let soundTrack = new Audio();
-        soundTrack.volume = 0.4;
-        soundTrack.loop = true;
-        return soundTrack;
-    }
-
-    let soundTrack = nuevoTrack();
-
     const elegirSoundtrack = evt => {
         if (evt.target.tagName == 'A' && evt.target.className != 'activo') {
             document.querySelector('.activo').removeAttribute("class");
@@ -79,12 +97,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 case TRACKLIST[0]:
                 case TRACKLIST[1]:
                 case TRACKLIST[2]:
-                    soundTrack.src = 'SOUND/' + evt.target.text + '.mp3';
-                    soundTrack.play();
+                    musica.ponerCancion(evt.target.text);
                     break;
                 case TRACKLIST[3]:
-                    soundTrack.pause();
-                    soundTrack = nuevoTrack();
+                    musica.soundTrack.pause();
+                    musica.soundTrack.removeAttribute('src');
                     break;
             }
         }
@@ -104,9 +121,6 @@ document.addEventListener("DOMContentLoaded", () => {
     document.body.appendChild(puntero);
 
     // Cada vez que el usuario cambie de pestaña, detenemos la música.
-    document.addEventListener('visibilitychange', () => {
-        if (soundTrack.src != false && !soundTrack.paused) soundTrack.pause();
-        else if (soundTrack.src != false && soundTrack.paused) soundTrack.play();
-    }, false);
-    
+    document.addEventListener('visibilitychange', () => musica.switchStatus(), false);
+
 });
