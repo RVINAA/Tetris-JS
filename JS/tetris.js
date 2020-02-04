@@ -110,14 +110,14 @@ const TETRIS = () => {
         detenerTimer = () => { clearInterval(this.timer); }
 
         pausarJuego = evt => {
-            if (evt.code == 'Enter' && !evt.repeat) {console.log('a')
+            if (evt.code == 'Enter' && !evt.repeat) {
                 if (this.pausado) {
                     window.addEventListener('keydown', FIGURAS.FIG_ACTUAL.moverFigura, false);
-                    this.iniciarTimer(), musica.switchStatus(), this.pausado = false;
+                    this.iniciarTimer(), musica.working = true, musica.switchStatus(), this.pausado = false;
                     document.querySelector('.pausa').removeAttribute('style');
                 } else {
                     window.removeEventListener('keydown', FIGURAS.FIG_ACTUAL.moverFigura, false);
-                    this.detenerTimer(), musica.switchStatus(), this.pausado = true;
+                    this.detenerTimer(), musica.switchStatus(), this.pausado = true, musica.working = false;
                     document.querySelector('.pausa').style.display = "block";
                     new Audio('SOUND/FX - Pause.mp3').play();
                 }

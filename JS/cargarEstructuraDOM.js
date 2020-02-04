@@ -3,6 +3,7 @@ class Gramola {
         this.soundTrack = new Audio();
         this.soundTrack.volume = 0.4;
         this.soundTrack.loop = true;
+        this.working = true;
     }
 
     ponerCancion = cancion => {
@@ -11,8 +12,10 @@ class Gramola {
     }
 
     switchStatus = () => {
-        if (this.soundTrack.src != false && !this.soundTrack.paused) this.soundTrack.pause();
-        else if (this.soundTrack.src != false && this.soundTrack.paused) this.soundTrack.play();
+        if (this.working) {
+            if (this.soundTrack.src != false && !this.soundTrack.paused) this.soundTrack.pause();
+            else if (this.soundTrack.src != false && this.soundTrack.paused) this.soundTrack.play();
+        }
     }
 }
 
