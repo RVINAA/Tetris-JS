@@ -32,7 +32,7 @@ body, html {
     border: 1px solid black;
     background-color: black;
     font-size: 16px;
-    width: 394px;
+    width: 396px;
     margin: 10px 10px 20px;
 }
 
@@ -40,8 +40,8 @@ body, html {
     outline: 5px groove var(--colorBiseles);
     background: url('../IMGs/Fondo.gif');
     border: 1px solid black;
-    height: 262px;
-    width: 246px;
+    height: 263px;
+    width: 248px;
     margin: 0px 10px 10px;
     float: left;
 }
@@ -55,7 +55,7 @@ body, html {
     border: 3px groove var(--colorBiseles);
     margin: 9px 0px 0px 9px;
     height: 25px;
-    width: 108px;
+    width: 109px;
     float: left;
 }
 
@@ -63,7 +63,7 @@ body, html {
     border: 3px groove var(--colorBiseles);
     margin: 9px 8px 10px 10px;
     height: 25px;
-    width: 108px;
+    width: 109px;
     float: left;
 }
 
@@ -71,8 +71,8 @@ body, html {
     border: 3px groove var(--colorBiseles);
     margin: 0px 0px 10px 9px;
     font-size: 12px;
-    height: 208px;
-    width: 108px;
+    height: 209px;
+    width: 109px;
     float: left;
 }
 
@@ -116,8 +116,9 @@ body, html {
     outline: 3px groove var(--colorBiseles);
     border: 1px solid black;
     margin: 3px 9px 10px 13px;
-    height: 202px;
-    width: 102px;
+    padding: 1px 0px 0px 1px;
+    height: 203px;
+    width: 103px;
     float: left;
 }
 
@@ -126,7 +127,7 @@ body, html {
     background-color: black;
     border: 1px solid black;
     margin-left: 10px;
-    height: 262px;
+    height: 263px;
     width: 128px;
     float: left;
 }
@@ -148,7 +149,7 @@ body, html {
 .musica {
     border: 3px groove var(--colorBiseles);
     margin: 9px 9px 10px;
-    height: 90px;
+    height: 91px;
     width: 108px;  
 }
 

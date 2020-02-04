@@ -153,7 +153,7 @@ const TETRIS = () => {
             return celdaOcupada;
         }
 
-        static calcularFigura = () => FIGURAS_DISPONIBLES[ Math.floor( (Math.random() * 7) ) ];
+        static calcularFigura = () => FIGURAS_DISPONIBLES[ Math.trunc(Math.random() * 7) ];
         
         static generarFigura = objFigura => {
             this.actualizarContadorFiguras(objFigura);
