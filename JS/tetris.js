@@ -119,6 +119,7 @@ const TETRIS = () => {
                     window.removeEventListener('keydown', FIGURAS.FIG_ACTUAL.moverFigura, false);
                     this.detenerTimer(), musica.switchStatus(), this.pausado = true;
                     document.querySelector('.pausa').style.display = "block";
+                    new Audio('SOUND/FX - Pause.mp3').play();
                 }
             }
         }
@@ -303,7 +304,9 @@ const TETRIS = () => {
     requestAnimationFrame(performAnimation);
 
     const gameOver = () => {
+        new Audio('SOUND/FX - Game Over.mp3').play();
         cancelAnimationFrame(request);
+        musica.switchStatus();
         console.log('Perdiste');
     };
 };
