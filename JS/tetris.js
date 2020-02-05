@@ -43,7 +43,7 @@ const TETRIS = () => {
             Tablero.actualizarFiguras();
         }
 
-        static actualizarNext = () => document.querySelector('.next > img').src = '../IMGs/blocks/' + PLAYER.NIVEL + '/' + FIGURAS.NXT_FIGURA.nombre + '.png';
+        static actualizarNext = () => document.querySelector('.next > img').src = 'IMGs/blocks/' + PLAYER.NIVEL + '/' + FIGURAS.NXT_FIGURA.nombre + '.png';
 
         constructor() {
             let contadorX = -10, contadorY = -20;
