@@ -9,7 +9,6 @@
 }
 
 * {
-    background-color: rgba(0, 0, 0, 0.6);
     color: var(--colorLetras);
     box-sizing: border-box;
     padding: 0px;
@@ -18,7 +17,7 @@
 
 html {
     background-image: url('../IMGs/background2.gif');
-    background-blend-mode: hard-light;
+    background-blend-mode: screen;
     background-position-y: bottom;
     background-repeat: no-repeat;
     background-size: cover;
@@ -28,9 +27,10 @@ html {
 }
 
 main {
+    background-color: rgba(0, 0, 0, 0.6);
     top: 0; right: 0; bottom: 0; left: 0;
     height: 337px; width: 426px;
-    border-radius: 6px;
+    border-radius: 5px;
     position: absolute;
     padding: 5px;
     margin: auto;

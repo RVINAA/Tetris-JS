@@ -288,7 +288,7 @@ const TETRIS = () => {
         VELOCIDAD : 500,
         PUNTUACION : 0,
         LINEAS : 0,
-        NIVEL : 0
+        NIVEL : 8
     };
 
     const FIGURAS = {
@@ -313,5 +313,6 @@ const TETRIS = () => {
         new Audio('SOUND/FX - Game Over.mp3').play();
         cancelAnimationFrame(request);
         musica.switchStatus();
+        musica.working = false;
     };
 };
