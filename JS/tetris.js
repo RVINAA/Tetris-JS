@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => TETRIS(), false);
 
 const TETRIS = () => {
-
+    
     const CONFIG = {
         MARGEN_TABLERO_MAX_Y : 210,
         MARGEN_TABLERO_MIN_Y : -20,
@@ -33,8 +33,7 @@ const TETRIS = () => {
         static actualizarLineas = () => document.querySelector('.lineas').innerText = 'LINES - ' + PLAYER.LINEAS.toString().padStart(3,'0');
 
         static actualizarFiguras = () => {
-            const BLOQUES = ['T', 'J', 'Z', 'C', 'S', 'L', 'I'];
-            document.querySelectorAll('.estadisticas > ul > li > img').forEach( (imagen, index) => { imagen.src = 'IMGs/blocks/' + PLAYER.NIVEL + '/' + BLOQUES[index] + '.png'; });
+            document.querySelectorAll('.estadisticas > ul > li > img').forEach( (imagen, index) => { imagen.src = 'IMGs/blocks/' + PLAYER.NIVEL + '/' + FIGURAS_DISPONIBLES[index].nombre + '.png'; });
         }
 
         static actualizarNivel = () => {
@@ -98,7 +97,7 @@ const TETRIS = () => {
     let tablero = new Tablero();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//     Definimos la clase figura de la que heredan las otras figuras y una función que genera aleatoriamente figuras.     //
+//         Aquí tenemos el temporizador, el encargado de que la pieza se mueva y de que se pueda pausar el juego.         //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     class Temporizador {
@@ -116,10 +115,12 @@ const TETRIS = () => {
         pausarJuego = evt => {
             if (evt.code == 'Enter' && !evt.repeat) {
                 if (this.pausado) {
+                    document.querySelector('.musica').addEventListener('click', elegirSoundtrack, false);
                     window.addEventListener('keydown', FIGURAS.FIG_ACTUAL.moverFigura, false);
                     this.iniciarTimer(), musica.working = true, musica.switchStatus(), this.pausado = false;
                     document.querySelector('.pausa').removeAttribute('style');
                 } else {
+                    document.querySelector('.musica').removeEventListener('click', elegirSoundtrack, false);
                     window.removeEventListener('keydown', FIGURAS.FIG_ACTUAL.moverFigura, false);
                     this.detenerTimer(), musica.switchStatus(), this.pausado = true, musica.working = false;
                     document.querySelector('.pausa').style.display = "block";
@@ -174,8 +175,6 @@ const TETRIS = () => {
             FIGURAS.NXT_FIGURA = this.calcularFigura();
             Tablero.actualizarNext();
         }
-
-        //////////////////////////////////////////////////////////////
 
         constructor(objFigura) {
             objFigura.inicio.forEach( bloque => tablero.sectores[bloque].color = objFigura.color );
@@ -276,7 +275,56 @@ const TETRIS = () => {
     };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//         Todo lo relacionado al Jugador; niveles, puntuación, velocidad de la partida, colores de las fichas...         //
+//                                     Todo lo relacionado con la música del juego...                                     //
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    class Gramola {
+        constructor() {
+            this.soundTrack = new Audio();
+            this.soundTrack.volume = 0.4;
+            this.soundTrack.loop = true;
+            this.working = true;
+            
+            document.addEventListener('visibilitychange', () => this.switchStatus(), false);
+        }
+
+        ponerCancion = cancion => {
+            this.soundTrack.src = 'SOUND/' + cancion + '.mp3';
+            this.soundTrack.play();
+        }
+
+        switchStatus = () => {
+            if (this.working) {
+                if (this.soundTrack.src != false && !this.soundTrack.paused) this.soundTrack.pause();
+                else if (this.soundTrack.src != false && this.soundTrack.paused) this.soundTrack.play();
+            }
+        }
+    }
+
+    let musica = new Gramola();
+
+    const elegirSoundtrack = evt => {
+        if (evt.target.tagName == 'LI' && evt.target.className != 'activo') {
+            document.querySelector('.activo').removeAttribute("class");
+            evt.target.className = 'activo';
+            switch(evt.target.innerText) {
+                case 'MUSIC - I':
+                case 'MUSIC - 2':
+                case 'MUSIC - 3':
+                    musica.ponerCancion(evt.target.innerText);
+                    break;
+                case 'MUTED - X':
+                    musica.soundTrack.pause();
+                    musica.soundTrack.removeAttribute('src');
+                    break;
+            }
+        }
+    }
+
+    document.querySelector('.musica').addEventListener('click', elegirSoundtrack, false);
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//        Objetos PLAYER y FIGURAS, donde se almacenarán los stats del usuario y las figuras que se van generando.        //
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     const PLAYER = {
@@ -307,6 +355,7 @@ const TETRIS = () => {
     requestAnimationFrame(performAnimation);
 
     const gameOver = () => {
+        document.querySelector('.musica').removeEventListener('click', elegirSoundtrack, false);
         new Audio('SOUND/FX - Game Over.mp3').play();
         cancelAnimationFrame(request);
         musica.switchStatus();

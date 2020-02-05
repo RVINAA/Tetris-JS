@@ -16,7 +16,7 @@
 }
 
 html {
-    background-image: url('../IMGs/background2.gif');
+    background-image: url('../IMGs/background.gif');
     background-blend-mode: screen;
     background-position-y: bottom;
     background-repeat: no-repeat;
@@ -155,19 +155,30 @@ main {
 
 .musica {
     border: 3px groove var(--colorBiseles);
+    height: 91px; width: 108px;
     margin: 9px 9px 10px;
-    height: 91px;
-    width: 108px;  
-}
-
-.musica > a {
-    display: block;
     font-size: 11px;
-    margin: 6px 0px;
 }
 
-.musica > a:nth-of-type(1) {
-    margin-top: 5px;
+.musica > ul {
+    overflow: hidden;
+    list-style: none;
+}
+.musica > ul > li {
+    margin-top: 1px;
+    padding: 3px 0;
+}
+
+.musica > ul > li:hover:not(.activo) {
+    color: var(--colorBiseles);
+}
+
+.musica > ul > li:hover::before {
+    content: '► ';
+}
+
+.musica > ul > li:hover::after {
+    content: ' ◄';
 }
 
 .activo::before {
@@ -175,18 +186,6 @@ main {
 }
 
 .activo::after {
-    content: ' ◄';
-}
-
-.musica > a:hover:not(.activo) {
-    color: var(--colorBiseles);
-}
-
-.musica > a:hover:not(.activo)::before {
-    content: '► ';
-}
-
-.musica > a:hover:not(.activo)::after {
     content: ' ◄';
 }
 
