@@ -9,15 +9,20 @@
 }
 
 * {
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.6);
     color: var(--colorLetras);
     box-sizing: border-box;
     padding: 0px;
     margin: 0px;
 }
 
-body, html {
-    background-color: black;
+html {
+    background-image: url('../IMGs/background2.gif');
+    background-blend-mode: hard-light;
+    background-position-y: bottom;
+    background-repeat: no-repeat;
+    background-size: cover;
+    height: 100%;
     font-family: 'retroGame';
     text-align: center;
 }
@@ -25,6 +30,7 @@ body, html {
 main {
     top: 0; right: 0; bottom: 0; left: 0;
     height: 337px; width: 426px;
+    border-radius: 6px;
     position: absolute;
     padding: 5px;
     margin: auto;
