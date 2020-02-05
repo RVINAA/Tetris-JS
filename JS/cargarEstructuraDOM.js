@@ -94,6 +94,7 @@ document.addEventListener("DOMContentLoaded", () => {
     puntero.children[1].className = 'next';
     puntero.children[1].appendChild(document.createElement('p'));
     puntero.children[1].firstElementChild.innerText = 'NEXT';
+    puntero.children[1].appendChild(document.createElement('img'));
 
     // Contenedor -> .music
     const elegirSoundtrack = evt => {

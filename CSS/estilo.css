@@ -149,6 +149,10 @@ main {
     width: 108px;
 }
 
+.next img {
+    margin-top: 22px;
+}
+
 .musica {
     border: 3px groove var(--colorBiseles);
     margin: 9px 9px 10px;

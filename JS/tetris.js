@@ -28,13 +28,9 @@ const TETRIS = () => {
     };
 
     class Tablero {
-        static actualizarPuntuacion = valor => {
-            document.querySelector('.puntuacion').innerText = (PLAYER.PUNTUACION += valor).toString().padStart(8,'0');
-        }
+        static actualizarPuntuacion = valor => document.querySelector('.puntuacion').innerText = (PLAYER.PUNTUACION += valor).toString().padStart(8,'0');
 
-        static actualizarLineas = () => {
-            document.querySelector('.lineas').innerText = 'LINES - ' + PLAYER.LINEAS.toString().padStart(3,'0');
-        }
+        static actualizarLineas = () => document.querySelector('.lineas').innerText = 'LINES - ' + PLAYER.LINEAS.toString().padStart(3,'0');
 
         static actualizarFiguras = () => {
             const BLOQUES = ['T', 'J', 'Z', 'C', 'S', 'L', 'I'];
@@ -46,6 +42,8 @@ const TETRIS = () => {
             new Audio('SOUND/FX - Level UP.mp3').play();
             Tablero.actualizarFiguras();
         }
+
+        static actualizarNext = () => document.querySelector('.next > img').src = '../IMGs/blocks/' + PLAYER.NIVEL + '/' + FIGURAS.NXT_FIGURA.nombre + '.png';
 
         constructor() {
             let contadorX = -10, contadorY = -20;
@@ -172,8 +170,9 @@ const TETRIS = () => {
         }
 
         static actualizarFiguras = () => {
-            FIGURAS.FIG_ACTUAL = this.generarFigura(FIGURAS.NXT_FIGURA);
+            FIGURAS.FIG_ACTUAL = this.generarFigura(FIGURAS.NXT_FIGURA || this.calcularFigura());
             FIGURAS.NXT_FIGURA = this.calcularFigura();
+            Tablero.actualizarNext();
         }
 
         //////////////////////////////////////////////////////////////
@@ -288,13 +287,11 @@ const TETRIS = () => {
         VELOCIDAD : 500,
         PUNTUACION : 0,
         LINEAS : 0,
-        NIVEL : 8
+        NIVEL : 0
     };
 
-    const FIGURAS = {
-        FIG_ACTUAL : Figura.generarFigura(Figura.calcularFigura()),
-        NXT_FIGURA : Figura.calcularFigura()
-    };
+    const FIGURAS = { FIG_ACTUAL : null, NXT_FIGURA : null };
+    Figura.actualizarFiguras();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //               Creamos una figura y un timer en el que iremos pintando el juego, comprobando colisiones..               //
