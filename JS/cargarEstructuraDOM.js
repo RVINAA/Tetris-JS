@@ -28,11 +28,15 @@ document.addEventListener("DOMContentLoaded", () => {
     
     document.title = '⸺ ❌ 𝑻 𝑬 𝑻 𝑹 𝑰 𝑺 ❌ ⸺'
 
+    // Contenedor centrado - Main
+    let main = document.createElement('main');
+    document.body.appendChild(main);
+
     // Cabecera -> .titulo
     let puntero = document.createElement('div');
     puntero.innerText = '𝑻𝑬𝑻𝑹𝑰𝑺 - @𝑺𝑰𝑮𝑴𝑨#1182';
     puntero.className = 'titulo';
-    document.body.appendChild(puntero);
+    main.appendChild(puntero);
 
     // Contenedor -> #Tetris
     puntero = document.createElement('div');
@@ -57,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
     BLOQUES.forEach( bloque => {
         let liPuntero = document.createElement('li');
         liPuntero.appendChild(document.createElement('img'));
-        liPuntero.firstElementChild.src = 'IMGs/piezas/block-' + bloque + '.png';
+        liPuntero.firstElementChild.src = 'IMGs/blocks/0/' + bloque + '.png';
         liPuntero.appendChild(document.createElement('p'));
         liPuntero.children[1].dataset.pieza = bloque;
         liPuntero.children[1].innerText = '000';
@@ -67,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Contenedor -> .Tablero
     puntero.appendChild(document.createElement('div'));
     puntero.children[3].className = 'tablero';
-    document.body.appendChild(puntero); // #Tetris.
+    main.appendChild(puntero); // #Tetris.
 
     // Pantalla de pausa -> .pauseScreen
     puntero.appendChild(document.createElement('div'));
@@ -121,7 +125,7 @@ document.addEventListener("DOMContentLoaded", () => {
         puntero.children[2].appendChild(aPuntero);
     });
 
-    document.body.appendChild(puntero);
+    main.appendChild(puntero);
 
     // Cada vez que el usuario cambie de pestaña, detenemos la música.
     document.addEventListener('visibilitychange', () => musica.switchStatus(), false);

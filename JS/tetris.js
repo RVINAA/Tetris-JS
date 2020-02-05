@@ -36,9 +36,15 @@ const TETRIS = () => {
             document.querySelector('.lineas').innerText = 'LINES - ' + PLAYER.LINEAS.toString().padStart(3,'0');
         }
 
+        static actualizarFiguras = () => {
+            const BLOQUES = ['T', 'J', 'Z', 'C', 'S', 'L', 'I'];
+            document.querySelectorAll('.estadisticas > ul > li > img').forEach( (imagen, index) => { imagen.src = 'IMGs/blocks/' + PLAYER.NIVEL + '/' + BLOQUES[index] + '.png'; });
+        }
+
         static actualizarNivel = () => {
             document.querySelector('.nivel').innerText = 'LEVEL: ' + (++PLAYER.NIVEL), PLAYER.VELOCIDAD -= 10;
             new Audio('SOUND/FX - Level UP.mp3').play();
+            Tablero.actualizarFiguras();
         }
 
         constructor() {
@@ -59,7 +65,7 @@ const TETRIS = () => {
         pintarCasilla = (color, x, y) => {
             const bloque = canvasPantalla.context;
             const imagen = new Image();
-            imagen.src = 'IMGs/casillas/' + PLAYER.NIVEL.toString().slice(PLAYER.NIVEL.toString().length - 1) + '/' + color + '.png';
+            imagen.src = 'IMGs/blocks/' + PLAYER.NIVEL.toString().slice(PLAYER.NIVEL.toString().length - 1) + '/' + color + '.png';
             bloque.drawImage(imagen, x, y, CONFIG.DIMENSION_BLOQUE, CONFIG.DIMENSION_BLOQUE);  
         }
 
@@ -172,7 +178,7 @@ const TETRIS = () => {
 
         //////////////////////////////////////////////////////////////
 
-        constructor(objFigura) {console.log(objFigura)
+        constructor(objFigura) {
             objFigura.inicio.forEach( bloque => tablero.sectores[bloque].color = objFigura.color );
             this.posiciones = objFigura.posiciones;
             this.bloques = objFigura.inicio;
@@ -307,6 +313,5 @@ const TETRIS = () => {
         new Audio('SOUND/FX - Game Over.mp3').play();
         cancelAnimationFrame(request);
         musica.switchStatus();
-        console.log('Perdiste');
     };
 };
