@@ -25,7 +25,7 @@ const TETRIS = () => {
             this.canvas.height = CONFIG.HEIGHT_CANVAS;
             this.canvas.width = CONFIG.WIDTH_CANVAS;
         }
-    };
+    }
 
     class Tablero {
         static actualizarPuntuacion = valor => document.querySelector('.puntuacion').innerText = (PLAYER.PUNTUACION += valor).toString().padStart(8,'0');
@@ -117,12 +117,12 @@ const TETRIS = () => {
                 if (this.pausado) {
                     document.querySelector('.musica').addEventListener('click', elegirSoundtrack, false);
                     window.addEventListener('keydown', FIGURAS.FIG_ACTUAL.moverFigura, false);
-                    this.iniciarTimer(), musica.working = true, musica.switchStatus(), this.pausado = false;
+                    this.iniciarTimer(), musica.status = true, musica.switchStatus(), this.pausado = false;
                     document.querySelector('.pausa').removeAttribute('style');
                 } else {
                     document.querySelector('.musica').removeEventListener('click', elegirSoundtrack, false);
                     window.removeEventListener('keydown', FIGURAS.FIG_ACTUAL.moverFigura, false);
-                    this.detenerTimer(), musica.switchStatus(), this.pausado = true, musica.working = false;
+                    this.detenerTimer(), musica.switchStatus(), this.pausado = true, musica.status = false;
                     document.querySelector('.pausa').style.display = "block";
                     new Audio('SOUND/FX - Pause.mp3').play();
                 }
@@ -283,7 +283,7 @@ const TETRIS = () => {
             this.soundTrack = new Audio();
             this.soundTrack.volume = 0.4;
             this.soundTrack.loop = true;
-            this.working = true;
+            this.status = true;
             
             document.addEventListener('visibilitychange', () => this.switchStatus(), false);
         }
@@ -294,7 +294,7 @@ const TETRIS = () => {
         }
 
         switchStatus = () => {
-            if (this.working) {
+            if (this.status) {
                 if (this.soundTrack.src != false && !this.soundTrack.paused) this.soundTrack.pause();
                 else if (this.soundTrack.src != false && this.soundTrack.paused) this.soundTrack.play();
             }
@@ -359,6 +359,6 @@ const TETRIS = () => {
         new Audio('SOUND/FX - Game Over.mp3').play();
         cancelAnimationFrame(request);
         musica.switchStatus();
-        musica.working = false;
+        musica.status = false;
     };
 };
