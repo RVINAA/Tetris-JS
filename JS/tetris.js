@@ -267,8 +267,15 @@ const TETRIS = () => {
             }
         }
 
-        comprobarGiro = array => {
-
+        comprobarGiro = array => { // Falta comprobarGiroLateral.
+            let colision = false;
+            array.forEach( (celda, index) => {
+                if (this.bloques.indexOf(this.bloques[index] + celda) == -1) {
+                    if (typeof tablero.sectores[this.bloques[index] + celda] == 'undefined' || tablero.sectores[this.bloques[index] + celda].color != null) colision = true;
+                }
+            });
+            console.log(colision)
+            return colision;
         }
 
         drop = () => { while (!this.comprobarColisiones('ArrowDown')) this.desplazar('ArrowDown'), Tablero.actualizarPuntuacion(1); }
