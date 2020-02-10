@@ -144,7 +144,7 @@ const TETRIS = () => {
         { nombre : 'J', color : 'type1', inicio : [CONFIG.SPAWN_BLOCK, CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 2, CONFIG.SPAWN_BLOCK + 12], posiciones : [[-9, 0, 9, -2], [11, 0, -11, -20], [9, 0, -9, 2], [-11, 0, 11, 20]] },
         { nombre : 'Z', color : 'type2', inicio : [CONFIG.SPAWN_BLOCK, CONFIG.SPAWN_BLOCK + 11, CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 12], posiciones : [[2, 0, 11, 9], [20, 0, 9 , -11], [-2, 0, -11, -9], [-20, 0, -9, 11]] },
         { nombre : 'C', color : 'type0', inicio : [CONFIG.SPAWN_BLOCK, CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 10, CONFIG.SPAWN_BLOCK + 11], posiciones : [[0, 0, 0, 0]] },
-        { nombre : 'S', color : 'type1', inicio : [CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 11, CONFIG.SPAWN_BLOCK + 2, CONFIG.SPAWN_BLOCK + 10], posiciones : [[11, 0, 20, -9], [9, 0, -2, 11], [-11, 0, -20, 9], [-9, 0, 2, -11]] },
+        { nombre : 'S', color : 'type1', inicio : [CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 11, CONFIG.SPAWN_BLOCK + 2, CONFIG.SPAWN_BLOCK + 10], posiciones : [[11, 0, 20, -9], [9, 9, -11, 11], [-11, -20, 0, 9], [-9, 11, -9, -11]] },
         { nombre : 'L', color : 'type2', inicio : [CONFIG.SPAWN_BLOCK, CONFIG.SPAWN_BLOCK + 1, CONFIG.SPAWN_BLOCK + 2, CONFIG.SPAWN_BLOCK + 10], posiciones: [[-9, 0, 9, -20], [11, 0, -11, 2], [9, 0, -9, 20], [-11, 0, 11, -2]] },
         { nombre : 'I', color : 'type0', inicio : [CONFIG.SPAWN_BLOCK + 9, CONFIG.SPAWN_BLOCK + 10, CONFIG.SPAWN_BLOCK + 11, CONFIG.SPAWN_BLOCK + 12], posiciones : [[-8, 1, 10, 19], [21, 10, -1, -12], [8, -1, -10, -19], [-21, -10, 1, 12]] }
     ];
@@ -267,7 +267,7 @@ const TETRIS = () => {
             }
         }
 
-        comprobarGiro = array => { // reeditar: parece que funciona, pero con la S si gira si traspasa al otro lado...
+        comprobarGiro = array => {
             let colision = false;
             array.forEach( (celda, index) => {
                 if (this.bloques.indexOf(this.bloques[index] + celda) == -1) {
@@ -277,7 +277,6 @@ const TETRIS = () => {
                         || (tablero.sectores[this.bloques[index] + celda].x == CONFIG.MARGEN_TABLERO_MAX_X && tablero.sectores[this.bloques[index]].x == CONFIG.MARGEN_TABLERO_MIN_X)) colision = true;
                 }
             });
-            console.log(colision)
             return colision;
         }
 
