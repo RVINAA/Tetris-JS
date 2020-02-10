@@ -267,11 +267,14 @@ const TETRIS = () => {
             }
         }
 
-        comprobarGiro = array => { // Falta comprobarGiroLateral.
+        comprobarGiro = array => { // reeditar: parece que funciona, pero con la S si gira si traspasa al otro lado...
             let colision = false;
             array.forEach( (celda, index) => {
                 if (this.bloques.indexOf(this.bloques[index] + celda) == -1) {
-                    if (typeof tablero.sectores[this.bloques[index] + celda] == 'undefined' || tablero.sectores[this.bloques[index] + celda].color != null) colision = true;
+                    if (typeof tablero.sectores[this.bloques[index] + celda] == 'undefined'
+                        || tablero.sectores[this.bloques[index] + celda].color != null
+                        || (tablero.sectores[this.bloques[index] + celda].x == CONFIG.MARGEN_TABLERO_MIN_X && tablero.sectores[this.bloques[index]].x == CONFIG.MARGEN_TABLERO_MAX_X)
+                        || (tablero.sectores[this.bloques[index] + celda].x == CONFIG.MARGEN_TABLERO_MAX_X && tablero.sectores[this.bloques[index]].x == CONFIG.MARGEN_TABLERO_MIN_X)) colision = true;
                 }
             });
             console.log(colision)
