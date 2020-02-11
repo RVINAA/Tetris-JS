@@ -33,7 +33,7 @@ const TETRIS = () => {
         static actualizarLineas = () => document.querySelector('.lineas').innerText = 'LINES - ' + PLAYER.LINEAS.toString().padStart(3,'0');
 
         static actualizarFiguras = () => {
-            document.querySelectorAll('.estadisticas > ul > li > img').forEach( (imagen, index) => { imagen.src = 'IMGs/blocks/' + PLAYER.NIVEL + '/' + FIGURAS_DISPONIBLES[index].nombre + '.png'; });
+            document.querySelectorAll('.estadisticas > ul > li > img').forEach( (imagen, index) => { imagen.src = 'IMGs/blocks/' + PLAYER.NIVEL % 10 + '/' + FIGURAS_DISPONIBLES[index].nombre + '.png'; });
         }
 
         static actualizarNivel = () => {
