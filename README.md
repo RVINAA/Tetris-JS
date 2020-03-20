@@ -1,9 +1,11 @@
-## Anotaciones de lo que queda:
-- Modificar el random de piezas.
-- Simular zumbido cuando hace linea de 4.
-- Modificicar el requestanimationframe y el canvas.
-- Reducir código.
-> Añadir ghost ( saber donde caerá la figura).
-...
+## Instrucciones: 
+← → - Mover pieza lateralmente.   
+ ↑  - Girar / rotar figura.
+ ↓  - Acelerar la bajada de la figura.
 
-### Index -> Elige nombre -> Juego con top puntos a la derecha mediante AJAX - Game Over -> Index 
+ENTER - Pausar / Reanudar juego.
+ESPACIO - Soltar figura.
+
+## Notas personales:
+Al final el requestanimationframe es de 0ms ya que si no no va tan fluido.
+Queda pendiente el posterior tratado de la puntuación.

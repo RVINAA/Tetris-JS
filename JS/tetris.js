@@ -356,9 +356,9 @@ const TETRIS = () => {
 
     let request;
     const performAnimation = () => {
-        request = requestAnimationFrame(performAnimation);
         canvasPantalla.mostrar();
         tablero.pintarTablero();
+        request = requestAnimationFrame(performAnimation);
     };
 
     requestAnimationFrame(performAnimation);
