@@ -33,16 +33,16 @@ const TETRIS = () => {
         static actualizarLineas = () => document.querySelector('.lineas').innerText = 'LINES - ' + PLAYER.LINEAS.toString().padStart(3,'0');
 
         static actualizarFiguras = () => {
-            document.querySelectorAll('.estadisticas > ul > li > img').forEach( (imagen, index) => { imagen.src = 'img/blocks/' + PLAYER.NIVEL % 10 + '/' + FIGURAS_DISPONIBLES[index].nombre + '.png'; });
+            document.querySelectorAll('.estadisticas > ul > li > img').forEach( (imagen, index) => { imagen.src = 'tetris-js/img/blocks/' + PLAYER.NIVEL % 10 + '/' + FIGURAS_DISPONIBLES[index].nombre + '.png'; });
         }
 
         static actualizarNivel = () => {
             document.querySelector('.nivel').innerText = 'LEVEL: ' + (++PLAYER.NIVEL), PLAYER.VELOCIDAD -= 10;
-            new Audio('sound/FX - Level UP.mp3').play();
+            new Audio('tetris-js/sound/FX - Level UP.mp3').play();
             Tablero.actualizarFiguras();
         }
 
-        static actualizarNext = () => document.querySelector('.next > img').src = 'img/blocks/' + PLAYER.NIVEL + '/' + FIGURAS.NXT_FIGURA.nombre + '.png';
+        static actualizarNext = () => document.querySelector('.next > img').src = 'tetris-js/img/blocks/' + PLAYER.NIVEL + '/' + FIGURAS.NXT_FIGURA.nombre + '.png';
 
         constructor() {
             let contadorX = -10, contadorY = -20;
@@ -62,7 +62,7 @@ const TETRIS = () => {
         pintarCasilla = (color, x, y) => {
             const bloque = canvasPantalla.context;
             const imagen = new Image();
-            imagen.src = 'img/blocks/' + PLAYER.NIVEL.toString().slice(PLAYER.NIVEL.toString().length - 1) + '/' + color + '.png';
+            imagen.src = 'tetris-js/img/blocks/' + PLAYER.NIVEL.toString().slice(PLAYER.NIVEL.toString().length - 1) + '/' + color + '.png';
             bloque.drawImage(imagen, x, y, CONFIG.DIMENSION_BLOQUE, CONFIG.DIMENSION_BLOQUE);  
         }
 
@@ -81,14 +81,14 @@ const TETRIS = () => {
                 }
             });
 
-            if (lineasCompletadas == 0) new Audio('sound/FX - Colision.mp3').play();
+            if (lineasCompletadas == 0) new Audio('tetris-js/sound/FX - Colision.mp3').play();
             else Tablero.actualizarLineas();
 
             if (lineasCompletadas > 0 && lineasCompletadas < 4) {
-                new Audio('sound/FX - POOR LINE.mp3').play();
+                new Audio('tetris-js/sound/FX - POOR LINE.mp3').play();
                 Tablero.actualizarPuntuacion( [40, 100, 300][lineasCompletadas - 1] );
             } else if (lineasCompletadas == 4) {
-                new Audio('sound/FX - GOOD LINE.mp3').play();
+                new Audio('tetris-js/sound/FX - GOOD LINE.mp3').play();
                 Tablero.actualizarPuntuacion(1200);
             }
         }
@@ -124,7 +124,7 @@ const TETRIS = () => {
                     window.removeEventListener('keydown', FIGURAS.FIG_ACTUAL.moverFigura, false);
                     this.detenerTimer(), musica.switchStatus(), this.pausado = true, musica.status = false;
                     document.querySelector('.pausa').style.display = "block";
-                    new Audio('sound/FX - Pause.mp3').play();
+                    new Audio('tetris-js/sound/FX - Pause.mp3').play();
                 }
             }
         }
@@ -262,7 +262,7 @@ const TETRIS = () => {
                 this.bloques.forEach( bloque => tablero.sectores[bloque].color = null );
                 this.bloques = this.bloques.map( (bloque, index) => bloque + this.posiciones[this.pos][index]);
                 this.bloques.forEach( bloque => tablero.sectores[bloque].color = this.color );
-                new Audio('sound/FX - Spin.mp3').play();
+                new Audio('tetris-js/sound/FX - Spin.mp3').play();
                 if (++this.pos > this.posiciones.length - 1) this.pos = 0;
             }
         }
@@ -298,7 +298,7 @@ const TETRIS = () => {
         }
 
         ponerCancion = cancion => {
-            this.soundTrack.src = 'sound/' + cancion + '.mp3';
+            this.soundTrack.src = 'tetris-js/sound/' + cancion + '.mp3';
             this.soundTrack.play();
         }
 
@@ -365,7 +365,7 @@ const TETRIS = () => {
 
     const gameOver = () => {
         document.querySelector('.musica').removeEventListener('click', elegirsoundtrack, false);
-        new Audio('sound/FX - Game Over.mp3').play();
+        new Audio('tetris-js/sound/FX - Game Over.mp3').play();
         cancelAnimationFrame(request);
         musica.switchStatus();
         musica.status = false;
