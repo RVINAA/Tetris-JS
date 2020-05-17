@@ -5,7 +5,7 @@
 
 @font-face {
     font-family: 'retroGame';
-    src: url(FONTs/Retro\ Gaming.ttf);
+    src: url(font/Retro\ Gaming.ttf);
 }
 
 * {
@@ -16,14 +16,9 @@
 }
 
 html {
-    background-image: url('../IMGs/background.gif');
-    background-blend-mode: screen;
-    background-position-y: bottom;
-    background-repeat: no-repeat;
-    background-size: cover;
-    height: 100%;
     font-family: 'retroGame';
     text-align: center;
+    height: 100%;
 }
 
 main {
@@ -52,7 +47,7 @@ main {
 
 #tetris {
     outline: 5px groove var(--colorBiseles);
-    background: url('../IMGs/Fondo.gif');
+    background: url('../img/Fondo.gif');
     border: 1px solid black;
     height: 263px;
     width: 248px;
