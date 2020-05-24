@@ -363,11 +363,27 @@ const TETRIS = () => {
 
     requestAnimationFrame(performAnimation);
 
+    const sendScoreAJAX = () => {
+        $.ajax({
+            type: "POST",
+            url: "../score/add",
+            data: { "Game": 'Tetris JS', "Score" : PLAYER.PUNTUACION },
+            success: (response) => {
+                if (response.route) window.location.href = response.route;
+            },
+            error: () => {
+                console.log("AJAX JQUERY DOES BRRRR.");
+            }
+        });
+    }
+
     const gameOver = () => {
         document.querySelector('.musica').removeEventListener('click', elegirsoundtrack, false);
         new Audio('tetris-js/sound/FX - Game Over.mp3').play();
         cancelAnimationFrame(request);
         musica.switchStatus();
         musica.status = false;
+
+        setTimeout(sendScoreAJAX, 2000);
     };
 };
