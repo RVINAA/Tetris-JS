@@ -135,6 +135,7 @@ main {
 .next {
     border: 3px groove var(--colorBiseles);
     margin: 9px 9px 10px;
+    font-size: 16px;
     height: 108px;
     width: 108px;
 }
