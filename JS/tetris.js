@@ -274,7 +274,10 @@ const TETRIS = () => {
                     if (typeof tablero.sectores[this.bloques[index] + celda] == 'undefined'
                         || tablero.sectores[this.bloques[index] + celda].color != null
                         || (tablero.sectores[this.bloques[index] + celda].x == CONFIG.MARGEN_TABLERO_MIN_X && tablero.sectores[this.bloques[index]].x == CONFIG.MARGEN_TABLERO_MAX_X)
-                        || (tablero.sectores[this.bloques[index] + celda].x == CONFIG.MARGEN_TABLERO_MAX_X && tablero.sectores[this.bloques[index]].x == CONFIG.MARGEN_TABLERO_MIN_X)) colision = true;
+                        || (tablero.sectores[this.bloques[index] + celda].x == CONFIG.MARGEN_TABLERO_MAX_X && tablero.sectores[this.bloques[index]].x == CONFIG.MARGEN_TABLERO_MIN_X)
+                        // Fix bug - letter I.
+                        || (tablero.sectores[this.bloques[index] + celda].x == CONFIG.MARGEN_TABLERO_MIN_X && tablero.sectores[this.bloques[index]].x == CONFIG.MARGEN_TABLERO_MAX_X - 10)
+                        || (tablero.sectores[this.bloques[index] + celda].x == CONFIG.MARGEN_TABLERO_MAX_X && tablero.sectores[this.bloques[index]].x == CONFIG.MARGEN_TABLERO_MIN_X + 10)) colision = true;
                 }
             });
             return colision;
